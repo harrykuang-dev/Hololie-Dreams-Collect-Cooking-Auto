@@ -1,0 +1,8 @@
+# Tested Python 3.13 package versions. CUDA wheel availability depends on index.
+torch==2.8.0
+torchvision==0.23.0
+opencv-python==4.14.0.94
+numpy==2.3.2
+Pillow==11.3.0
+scipy==1.18.1
+moderngl==5.12.0

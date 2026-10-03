@@ -1,0 +1,36 @@
+{
+  "runtime_version": "e323dd962ed18ef1",
+  "release_tag": "v0.1.0",
+  "archive_name": "models.zip",
+  "archive_sha256": "5f15100c5abd6483707847e5222a7039c7768737c543a94f4c39fe977d87f188",
+  "files": {
+    "outputs/kitchen-bot/icon-classifier.pt": {
+      "sha256": "a31a282ccd1c0e1fecb8c1928d669610def3d220a5323343070bc11841df1cac",
+      "bytes": 44848459
+    },
+    "outputs/kitchen-bot/point-classifier-human-paired.pt": {
+      "sha256": "b00175762151bf4c8ce50510ae720beaac2d07b3745bfa84175d78750e62d75e",
+      "bytes": 44848715
+    },
+    "outputs/kitchen-bot/point-classifier.pt": {
+      "sha256": "182cd2d7ad69cdce33778639b98b39730833db9988a3ccd48b0e835267db2c51",
+      "bytes": 44848587
+    },
+    "outputs/kitchen-bot/segmenter-adapted.pt": {
+      "sha256": "65871384b6b45c36e62cc0941ac198cf863d71121371628fce228b90fc7ef1f6",
+      "bytes": 3806957
+    },
+    "outputs/kitchen-bot/segmenter-positive-surfaces.pt": {
+      "sha256": "b66e1a7dbc9a0da1bc6009f1bef3be40ba84d24c056766c022c9e53da2ba6c95",
+      "bytes": 3808383
+    },
+    "outputs/kitchen-bot/segmenter.pt": {
+      "sha256": "9ea29a4af00e6c696001b88bac6d73cafbd10e6759964f80ef83060499aca32f",
+      "bytes": 3806027
+    },
+    "outputs/kitchen-labeler/point-classifier-human.pt": {
+      "sha256": "aa32aa087ae52bc174cbd23d11332365b7be16f571ab0c824aece71c3bec81e4",
+      "bytes": 44847307
+    }
+  }
+}

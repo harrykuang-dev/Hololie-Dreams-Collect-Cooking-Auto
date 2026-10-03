@@ -1,0 +1,7 @@
+# Preserve byte-for-byte runtime fingerprints across Windows Git settings.
+*.py -text
+*.pyw -text
+*.md text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
+*.cmd text eol=crlf

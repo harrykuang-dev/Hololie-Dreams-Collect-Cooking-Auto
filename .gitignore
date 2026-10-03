@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.pt
+*.log
+downloads/
+outputs/kitchen-bot/runs/
+annotations.json
+drafts.json
+*.mp4
+*.zip
+.env
+.env.*

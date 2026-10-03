@@ -1,0 +1,105 @@
+{
+  "batches": [
+    {
+      "role": "best_recorded_batch",
+      "runtime_version": "18e2ddb6c76d8c2f",
+      "requested_games": 5,
+      "all_results_visually_verified": true,
+      "statistics": {
+        "count": 5,
+        "mean": 9,
+        "median": 9,
+        "minimum": 8,
+        "maximum": 11
+      },
+      "games": [
+        {
+          "run_id": "standalone-1791033337863",
+          "completed": 11,
+          "score": 9300,
+          "termination": "timer",
+          "final_sha256": "c32fd98a4fc2d43caf1584475b8be908e4343df71650d436c721e1927dd62de1"
+        },
+        {
+          "run_id": "standalone-1791033614237",
+          "completed": 8,
+          "score": 6320,
+          "termination": "timer",
+          "final_sha256": "2fe601550ec604dc309235c64d3f97020cfe9f6e583c756b45b6c23dc793c7db"
+        },
+        {
+          "run_id": "standalone-1791033869444",
+          "completed": 9,
+          "score": 6840,
+          "termination": "timer",
+          "final_sha256": "91b175a018a3a6e68fb60bfb92009e568cc7b661aa9448270b175ea3d1d1d5f2"
+        },
+        {
+          "run_id": "standalone-1791034131593",
+          "completed": 8,
+          "score": 6260,
+          "termination": "timer",
+          "final_sha256": "6fae3029ff6a2e49f4dad2c4ab993b7e780b4414bc47531431db7cbdf81b245f"
+        },
+        {
+          "run_id": "standalone-1791034385917",
+          "completed": 9,
+          "score": 7380,
+          "termination": "timer",
+          "final_sha256": "5923fde7b623a4c6f64eb58bf815f2b47ef716fe7cf333bd81d763c756badf7c"
+        }
+      ]
+    },
+    {
+      "role": "published_latest_batch",
+      "runtime_version": "e323dd962ed18ef1",
+      "requested_games": 5,
+      "all_results_visually_verified": true,
+      "statistics": {
+        "count": 5,
+        "mean": 8,
+        "median": 8,
+        "minimum": 6,
+        "maximum": 10
+      },
+      "games": [
+        {
+          "run_id": "standalone-1791040979746",
+          "completed": 10,
+          "score": 8600,
+          "termination": "timer",
+          "final_sha256": "5cb1913fbcc155c2c43f820cf475fdf45e3a834b730a71ef514f4a0efb394d8d"
+        },
+        {
+          "run_id": "standalone-1791041248745",
+          "completed": 8,
+          "score": 6020,
+          "termination": "timer",
+          "final_sha256": "be7dc994c283d52953efa65348589b1d808b0395f3f80f776beeaa63531418ea"
+        },
+        {
+          "run_id": "standalone-1791041504114",
+          "completed": 6,
+          "score": 4340,
+          "termination": "burst",
+          "final_sha256": "f6ba15464d71257e0849cf907856a14b9df514cfb5712133232305447f9f3740"
+        },
+        {
+          "run_id": "standalone-1791041688122",
+          "completed": 7,
+          "score": 5330,
+          "termination": "timer",
+          "final_sha256": "440e4469c833b1565d5ac68bb5d36d66a0f190e253dbfb1a8327bde59db3988c"
+        },
+        {
+          "run_id": "standalone-1791041935407",
+          "completed": 9,
+          "score": 7490,
+          "termination": "timer",
+          "final_sha256": "a8b86b24e3ec1f052ed3e59478e355275d66e1ba48ce70546855dabd300165dd"
+        }
+      ]
+    }
+  ],
+  "note": "Sanitized numerical evidence and game-only result hashes. Raw recordings, annotations, input logs, absolute filesystem paths, and the full training corpus are excluded."
+}
