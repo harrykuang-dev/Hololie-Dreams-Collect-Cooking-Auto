@@ -39,6 +39,7 @@ class Desktop:
     def __init__(self,title):
         self.u=C.WinDLL('user32',use_last_error=True)
         self.start_hotkey=StartHotkey()
+        self.toggle_seen=self.toggle_sequence()
         self.g=C.WinDLL('gdi32',use_last_error=True)
         def bind(lib,name,args,result):
             f=getattr(lib,name);f.argtypes=args;f.restype=result;return f
@@ -77,7 +78,16 @@ class Desktop:
     def should_stop(self):
         stop_file=os.environ.get('COOKING_STOP_FILE')
         return bool(stop_file and Path(stop_file).exists()) or stop_hotkey_pressed(os.environ.get('COOKING_STOP_KEY','Esc'),self.u.GetAsyncKeyState)
+    def toggle_sequence(self):
+        path=os.environ.get('COOKING_TOGGLE_FILE')
+        if not path:return 0
+        try:return int(Path(path).read_text(encoding='ascii'))
+        except (OSError,ValueError):return getattr(self,'toggle_seen',0)
     def should_toggle(self):
+        if os.environ.get('COOKING_TOGGLE_FILE'):
+            count=self.toggle_sequence();changed=(count-self.toggle_seen)%2!=0
+            self.toggle_seen=count
+            return changed
         return self.start_hotkey.poll(os.environ.get('COOKING_START_KEY','F8'),self.u.GetAsyncKeyState)
     def focused(self):
         return self.u.IsWindow(self.hwnd) and not self.u.IsIconic(self.hwnd) and self.u.GetForegroundWindow()==self.hwnd

@@ -1,5 +1,5 @@
 {
-  "version": "07bfb0c6be8b8239",
+  "version": "18f1a4a94a7c73ea",
   "based_on_gameplay_version": "e323dd962ed18ef1",
   "release": "v0.2.0",
   "changes": [
@@ -7,7 +7,8 @@
     "Cooperative launcher stop signal",
     "Optional MP4 encoding; capture remains 20 FPS",
     "Callable worker entry point",
-    "Custom start/pause and stop shortcuts with modifier support"
+    "Custom start/pause and stop shortcuts with modifier support",
+    "Persist global pause key events across model inference"
   ],
   "files": {
     "counters.py": "6f9041c639c9ec8993968f004944a96561f63a186fb2a594efc69a2062f6e89c",
@@ -27,7 +28,7 @@
     "segmenter.py": "8ebd2a7ff3420e45daf4d3cf552909d968c9dd52205eb9bfa5a5ca6a203122c0",
     "session_flow.py": "0b48da0e2c760056048cb414648b7770336311ffa72c5102212472beadcd5397",
     "shuffle_state.py": "072607b68ee17b7b1a68da1e4dfa48f8c83dabd40f23fe550b11650b666500cc",
-    "standalone.py": "af89342351e7b5ef75b9444ff2a07f98e7ea5d4f4e328cd0e8617b004bc6e027",
+    "standalone.py": "49b6a8154bd9ed06c0fb6a370854811e7eaf9431692892c83ff1fc716e809c86",
     "supplemental_food.py": "de27546ad175464d09c9f7833db65c76e8b0a6e67835b5d98ce3896bb19c452a",
     "ui-burst-mask.png": "000d141e801451e8fb6ac54eb7719b37c8f0cb856e5ff5b1d0a2a7c0dec088cd",
     "ui-complete-human-mask.png": "5b160b832cb30b1812b394949ab2f75276c4b9f05b85d17211d18d805eadb7bb",

@@ -9,7 +9,7 @@ import numpy as np
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT), str(ROOT/'outputs/kitchen-bot')]
-from gui import parse_games
+from gui import parse_games, CookingApp
 from standalone import Desktop, Recording
 from app_settings import StartHotkey, hotkeys_conflict, captured_hotkey, parse_stop_hotkey
 
@@ -74,6 +74,46 @@ class Controls(unittest.TestCase):
         with patch.dict(os.environ,{'COOKING_STOP_FILE':'','COOKING_STOP_KEY':'Ctrl+F9'}):
             held.add(0x78); self.assertFalse(desktop.should_stop())
             held.add(0x11); self.assertTrue(desktop.should_stop())
+
+    def test_pause_event_survives_key_release_and_duplicate_polls(self):
+        desktop=object.__new__(Desktop); desktop.toggle_seen=0
+        with tempfile.TemporaryDirectory() as folder:
+            signal=Path(folder)/'toggle';signal.write_text('0',encoding='ascii')
+            with patch.dict(os.environ,{'COOKING_TOGGLE_FILE':str(signal)}):
+                self.assertFalse(desktop.should_toggle())
+                signal.write_text('1',encoding='ascii')
+                self.assertTrue(desktop.should_toggle())
+                self.assertFalse(desktop.should_toggle())
+                signal.write_text('3',encoding='ascii')
+                self.assertFalse(desktop.should_toggle())
+                signal.write_text('4',encoding='ascii')
+                self.assertTrue(desktop.should_toggle())
+
+    def test_launcher_retries_a_busy_pause_signal(self):
+        launcher=object.__new__(CookingApp)
+        launcher.child=object(); launcher.toggle_count=0
+        class Root:
+            callbacks=[]
+            def after(self, delay, callback): self.callbacks.append(callback)
+        launcher.root=Root()
+        with tempfile.TemporaryDirectory() as folder:
+            launcher.stop_path=Path(folder)/'stop'
+            launcher.toggle_path=Path(folder)/'toggle'
+            launcher.toggle_path.write_text('0',encoding='ascii')
+            with patch.object(Path,'replace',side_effect=PermissionError('Reader busy')):
+                launcher.toggle()
+            self.assertEqual(launcher.toggle_path.read_text(), '0')
+            launcher.root.callbacks.pop()()
+            self.assertEqual(launcher.toggle_path.read_text(), '1')
+            launcher.publish_toggle()  # Duplicate retry is harmless.
+
+    def test_shortcut_help_preserves_escape_inside_start_binding(self):
+        class Value:
+            def __init__(self,text):self.text=text
+            def get(self):return self.text
+        launcher=object.__new__(CookingApp)
+        launcher.start_key=Value('Ctrl+Esc');launcher.stop_key=Value('F9')
+        self.assertEqual(launcher.with_keys('F8 start; Esc stop'),'Ctrl+Esc start; F9 stop')
 
 
 if __name__=='__main__': unittest.main()

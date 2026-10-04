@@ -118,7 +118,7 @@ class CookingApp:
         if not registered: self.messages.put(('error', f'Hotkey unavailable: {key} (Windows error {error}). Choose another key.'))
 
     def configure_hotkeys(self):
-        self.start_listener.configure(value=self.start_key.get(),enabled=not self.child and not self.capturing and not self.closing)
+        self.start_listener.configure(value=self.start_key.get(),enabled=not self.capturing and not self.closing)
         self.stop_listener.configure(value=self.stop_key.get(),enabled=bool(self.child) and not self.capturing)
 
     def begin_capture(self,event,variable):
@@ -145,7 +145,8 @@ class CookingApp:
         (DATA/'settings.json').write_text(json.dumps({'language':self.language.get(),'games':self.games.get().strip(),'video':self.video.get(),'start_key':self.start_key.get(),'stop_key':self.stop_key.get()},ensure_ascii=False),encoding='utf8')
 
     def with_keys(self,text):
-        return text.replace('F8',self.start_key.get()).replace('Esc',self.stop_key.get())
+        return (text.replace('F8','{start-key}').replace('Esc','{stop-key}')
+                .replace('{start-key}',self.start_key.get()).replace('{stop-key}',self.stop_key.get()))
 
     def translate(self):
         self.t = TEXT[self.language.get()]
@@ -164,6 +165,8 @@ class CookingApp:
         self.save_settings()
         self.session = DATA / ('launch-'+str(time.time_ns())); self.session.mkdir()
         self.log_path = self.session / 'launcher.log'; self.stop_path = self.session / 'stop'
+        self.toggle_path=self.session/'toggle'; self.toggle_count=0
+        self.toggle_path.write_text('0',encoding='ascii')
         self.stream = self.log_path.open('w', encoding='utf8'); self.log_position = 0
         args = ['--worker', '--games', str(games), '--output', str(self.session/'runs'), '--control-file', str(self.stop_path)]
         args += ['--start-key',self.start_key.get(),'--stop-key',self.stop_key.get()]
@@ -186,11 +189,30 @@ class CookingApp:
         if self.child:
             self.stop_path.touch(); self.status.configure(text=self.t[12]); self.stop_button.configure(state='disabled')
 
+    def toggle(self):
+        if self.child and not self.stop_path.exists():
+            self.toggle_count+=1
+            pending=self.toggle_path.with_suffix('.pending')
+            pending.write_text(str(self.toggle_count),encoding='ascii')
+            self.publish_toggle()
+
+    def publish_toggle(self):
+        if not self.child or self.stop_path.exists():return
+        try:
+            self.toggle_path.with_suffix('.pending').replace(self.toggle_path)
+        except PermissionError:
+            # A Windows reader can briefly hold the destination without
+            # delete sharing. Keep the newest event pending and retry.
+            self.root.after(10,self.publish_toggle)
+        except FileNotFoundError:
+            pass  # A previously scheduled retry already published it.
+
     def poll(self):
         while not self.messages.empty():
             event,value=self.messages.get_nowait()
-            if event=='start' and not self.closing and self.capturing is None and not self.child:
-                self.start(autostart=True)
+            if event=='start' and not self.closing and self.capturing is None:
+                if self.child:self.toggle()
+                else:self.start(autostart=True)
             elif event=='stop': self.stop()
             elif event=='error': self.append(value)
         if self.child:
@@ -246,6 +268,7 @@ def worker():
         sys.stdout=(args.output.parent/'launcher.log').open('a', encoding='utf8', buffering=1)
     if sys.stderr is None: sys.stderr=sys.stdout
     os.environ['COOKING_STOP_FILE']=str(args.control_file)
+    os.environ['COOKING_TOGGLE_FILE']=str(args.control_file.with_name('toggle'))
     os.environ['COOKING_RECORD_VIDEO']='1' if args.record_video else '0'
     os.environ['COOKING_START_KEY']=args.start_key; os.environ['COOKING_STOP_KEY']=args.stop_key
     sys.path.insert(0, str(BOT))
