@@ -4,14 +4,24 @@
 
 An experimental, local Windows auto-player for **Collect Cooking** in hololive DREAMS. The game is called **拼配厨房** in Simplified Chinese and **食材妙厨房** in Traditional Chinese. The repository name preserves the requested spelling, `Hololie-Dreams-Collect-Cooking-Auto`.
 
-The published runtime is **`e323dd962ed18ef1`**, the latest tested version. It uses screenshots, neural image recognition, a persistent match-three planner, optical flow, and native mouse input. There is no language-model call in the gameplay loop, game-memory reading, process injection, or modification of game files.
+The gameplay baseline is **`e323dd962ed18ef1`**, the latest version tested over five games. It uses screenshots, neural image recognition, a persistent match-three planner, optical flow, and native mouse input. There is no language-model call in the gameplay loop, game-memory reading, process injection, or modification of game files.
+
+## Portable Windows release (v0.2.0)
+
+Download the complete portable archive from [Releases](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/releases/tag/v0.2.0), extract it, then double-click `Collect-Cooking-Auto-v0.2.0.exe` inside the extracted folder. Keep `_internal` beside the EXE. Python, installation and separate model downloads are unnecessary. CUDA libraries and all checkpoints are bundled; NVIDIA GPU inference is retained, with CPU fallback. If the archive is split into `.7z.001`, `.7z.002`, etc., download all parts into the same folder and extract `.001` using 7-Zip.
+
+The light Windows interface follows [Hololive-Dreams-Fishing-Auto](https://github.com/harrykuang-dev/Hololive-Dreams-Fishing-Auto). Choose English/Simplified/Traditional Chinese, enter a positive game count and optionally enable video recording. Click **Start** to prepare models, then return to the game and press the start/pause shortcut (default **F8**). Pressing the shortcut while the app is idle loads models and starts automatically if the game remains foreground. The stop shortcut (default **Esc**) or **Stop** ends the batch. Click a shortcut field and press a new key or Ctrl/Alt/Shift combination; overlapping shortcuts are rejected. Shortcuts can be changed while idle. Closing the launcher requests a graceful stop and waits for the worker.
+
+Settings and logs are saved in `%LOCALAPPDATA%/CollectCookingAuto`. Video is off by default; capture stays at 20 FPS. The completed-game count indicates batch progress, not a verified dish count. Source users can run `pythonw gui.py`; `Launch.cmd` uses the same frontend. Shortcut helpers are reused under the fishing project's MIT license; attribution is in [third-party/README.md](third-party/README.md).
+
+This release packages the previous gameplay logic with launcher/control changes. The five-game results below describe the original runtime, not a new benchmark of v0.2.0. Current package fingerprints are in [docs/packaged-runtime.json](docs/packaged-runtime.json); historical test fingerprints remain unchanged. Build using `pip install -r requirements-build.txt` and `./build.ps1` after installing models; use a CUDA-enabled torch build to retain GPU support. The frontend and model inference run in separate processes; a local stop signal is checked before clicks and during transitions.
 
 ## Status and actual results
 
 | Fixed-version batch | Completed dishes in five games | Mean | Median | Range | Endings |
 | --- | --- | ---: | ---: | --- | --- |
 | Best recorded batch, `18e2ddb6c76d8c2f` | 11, 8, 9, 8, 9 | **9.0** | 9 | 8–11 | Five timeouts |
-| Published latest, `e323dd962ed18ef1` | 10, 8, 6, 7, 9 | **8.0** | 8 | 6–10 | Four timeouts, one tray overflow |
+| Latest tested gameplay, `e323dd962ed18ef1` | 10, 8, 6, 7, 9 | **8.0** | 8 | 6–10 | Four timeouts, one tray overflow |
 
 Every listed result was checked against the game's final result screen; these are not just internal planner counters. The development target, five games averaging at least **9.79 dishes** (an integer total of at least 49), has **not** been achieved. A single ten-dish game is not evidence of consistent ten-dish performance. These random batches do not establish that the newer version improves or worsens the baseline. Sanitized results and fingerprints are in [docs/verified-batches.json](docs/verified-batches.json) and [docs/tested-runtime.json](docs/tested-runtime.json).
 
@@ -36,8 +46,8 @@ The package pins match the tested Python packages; the default PyTorch wheel sel
 ## Run
 
 1. Open Collect Cooking and choose **SCORE ATTACK**. Ordinary mode also has a timer and is not the ten-dish evaluation mode.
-2. Double-click `Launch.cmd`, or run `.\.venv\Scripts\pythonw.exe outputs\kitchen-bot\启动独立版.pyw`.
-3. Select 1–5 games, click **Start**, wait for **Ready**, return to the game and press **F8**. The player can advance from its result screen, kitchen menu, or Order screen using fixed-layout buttons.
+2. Double-click `Launch.cmd`, or run `.\.venv\Scripts\pythonw.exe gui.py`.
+3. Enter a positive game count, click **Start**, wait for **Ready**, return to the game and press **F8**. The player can advance from its result screen, kitchen menu, or Order screen using fixed-layout buttons.
 4. Keep the game in the foreground and avoid concurrent mouse/keyboard use. **F8** pauses/resumes; **Escape** stops. Switching focus pauses gameplay input; return to the game and press F8 to resume.
 5. Review the saved result screen and logs after each batch. This is a development player, not a guaranteed unattended ten-dish solution.
 
@@ -96,7 +106,7 @@ The candidate must pass a copy of the original planner, including its recent bad
 
 Installed active weights: `segmenter-adapted.pt`, `icon-classifier.pt`, `segmenter-positive-surfaces.pt`, `point-classifier-human-paired.pt`, and `outputs/kitchen-labeler/point-classifier-human.pt`. The archive also includes historical `segmenter.pt` and `point-classifier.pt` fallbacks. `render_samples.py`, `vision.py`, and `worker.py` are retained historical/support modules; the synthetic renderer requires the separate local 3D asset corpus. The standalone player does **not** require Codex or Computer Use.
 
-New runs write under `outputs/kitchen-bot/runs/`: `game.mp4`, decision JPEGs, selected lossless PNG pairs, `final.jpg`, `decisions.jsonl`, `inputs.jsonl`, and capture/summary JSON. A session stores source/model fingerprints and transition logs. Recording is currently always enabled; a user-facing recording toggle is **not implemented**. The public repository excludes local run logs, videos, personal filesystem paths, and raw annotations.
+Launcher runs save under `%LOCALAPPDATA%/CollectCookingAuto/launch-…/runs/`; direct CLI runs default to `outputs/kitchen-bot/runs/`. Diagnostics include decision images, `final.jpg`, JSONL and summaries. MP4 is optional in the GUI (off by default); direct CLI recording defaults to on. Private runs and annotation data are excluded from the public repository.
 
 Offline checks:
 

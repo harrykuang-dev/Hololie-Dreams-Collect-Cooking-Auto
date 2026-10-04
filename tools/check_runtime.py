@@ -16,7 +16,7 @@ def digest(path):
 
 
 def main():
-    tested = json.loads((ROOT / 'docs/tested-runtime.json').read_text(encoding='utf-8'))
+    tested = json.loads((ROOT / 'docs/packaged-runtime.json').read_text(encoding='utf-8'))
     actual = {}
     for name, expected in tested['files'].items():
         path = BOT / name
@@ -33,7 +33,7 @@ def main():
         path = ROOT / name
         if not path.is_file() or path.stat().st_size != expected['bytes'] or digest(path) != expected['sha256']:
             raise SystemExit('Checkpoint fingerprint differs: ' + name)
-    print(f"PASS: runtime {version}; all {len(actual)} tested fingerprints and {len(models['files'])} model files match.")
+    print(f"PASS: runtime {version}; all {len(actual)} published fingerprints and {len(models['files'])} model files match.")
 
 
 if __name__ == '__main__':

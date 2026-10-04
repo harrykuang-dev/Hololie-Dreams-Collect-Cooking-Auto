@@ -11,3 +11,6 @@ drafts.json
 *.zip
 .env
 .env.*
+build/
+dist/
+*.exe

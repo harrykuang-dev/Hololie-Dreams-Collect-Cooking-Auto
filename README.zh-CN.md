@@ -4,14 +4,24 @@
 
 hololive DREAMS 小游戏 **Collect Cooking** 的 Windows 本地自动游玩实验程序。游戏简体名称为 **拼配厨房**，繁体名称为 **食材妙厨房**。仓库名称保留指定拼写 `Hololie-Dreams-Collect-Cooking-Auto`。
 
-发布的是最新经过实战测试的 **`e323dd962ed18ef1`**。程序结合截图、神经网络图像识别、持续保存状态的三消规划、光流追踪和本地鼠标输入。游戏循环不调用语言模型，不读取游戏内存，不注入游戏进程，也不修改游戏文件。
+料理逻辑基于最新经过五局实战测试的 **`e323dd962ed18ef1`**。程序结合截图、神经网络图像识别、持续保存状态的三消规划、光流追踪和本地鼠标输入。游戏循环不调用语言模型，不读取游戏内存，不注入游戏进程，也不修改游戏文件。
+
+## Windows 便携版（v0.2.0）
+
+从 [Release](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/releases/tag/v0.2.0) 下载完整便携包，解压后双击文件夹中的 `Collect-Cooking-Auto-v0.2.0.exe`。保留旁边的 `_internal` 文件夹。已包含 Python 运行环境、CUDA 库与全部模型，无需另装 Python 或下载模型。保留 NVIDIA GPU 推理并支持 CPU 回退。如果发布包分为 `.7z.001`、`.7z.002` 等，请下载所有分卷到同一文件夹，再用 7-Zip 解压 `.001`。
+
+前端参考 [Hololive-Dreams-Fishing-Auto](https://github.com/harrykuang-dev/Hololive-Dreams-Fishing-Auto) 的浅色 Windows 布局。支持英／简／繁三种界面语言，局数自行填写正整数，录像默认关闭。点击「开始」加载模型，再切回游戏按开始／暂停键（默认 **F8**）。在程序待命时直接按该热键，会加载模型并在游戏仍位于前台时自动开始。「停止」按钮或停止键（默认 **Esc**）结束整批。点击热键输入框后按新的按键，可带 Ctrl／Alt／Shift；拒绝重叠的热键，运行时不能修改。关闭前端会请求正常停止并等待工作进程退出。
+
+设置与日志保存在 `%LOCALAPPDATA%/CollectCookingAuto`。关闭录像仍保持 20 FPS 截图。已完成局数表示批次进度，并非已核验料理数。源码可用 `pythonw gui.py` 或 `Launch.cmd` 启动相同前端。快捷键辅助代码按钓鱼项目的 MIT 许可复用，来源见 [third-party/README.md](third-party/README.md)。
+
+本次加入前端、打包与控制功能，沿用此前已测料理逻辑。下方五局成绩属于原实测版，并非 v0.2.0 的新实战成绩。当前包指纹见 [docs/packaged-runtime.json](docs/packaged-runtime.json)，历史指纹保留原值。安装模型后，使用 `pip install -r requirements-build.txt` 与 `./build.ps1` 打包；需使用支持 CUDA 的 torch 环境以保留 GPU 功能。前端与模型推理分进程运行，停止请求通过本地控制文件传递，并在点击前及过场期间检查。
 
 ## 当前状态与真实成绩
 
 | 固定版本五局 | 每局完成料理数 | 平均 | 中位数 | 范围 | 结束原因 |
 | --- | --- | ---: | ---: | --- | --- |
 | 最佳记录版 `18e2ddb6c76d8c2f` | 11、8、9、8、9 | **9.0** | 9 | 8–11 | 五局时间到 |
-| 本次最新发布版 `e323dd962ed18ef1` | 10、8、6、7、9 | **8.0** | 8 | 6–10 | 四局时间到、一局爆槽 |
+| 最新实测料理版 `e323dd962ed18ef1` | 10、8、6、7、9 | **8.0** | 8 | 6–10 | 四局时间到、一局爆槽 |
 
 上述成绩逐局核对了游戏结算画面，并非仅采用程序内部计数。开发目标是五局平均至少 **9.79 道**，即整数总和至少 49；**尚未达成**。单局十道不代表稳定每局十道。两批随机五局也不能证明新版本改善或导致退步。去除个人路径后的数据见 [docs/verified-batches.json](docs/verified-batches.json)，已测运行版指纹见 [docs/tested-runtime.json](docs/tested-runtime.json)。
 
@@ -36,8 +46,8 @@ gh release download v0.1.0 --repo harrykuang-dev/Hololie-Dreams-Collect-Cooking-
 ## 运行
 
 1. 进入 **Collect Cooking／拼配厨房**，选择 **SCORE ATTACK**。普通模式也计时，不是十道料理的验证模式。
-2. 双击根目录 `Launch.cmd`，或运行 `.\.venv\Scripts\pythonw.exe outputs\kitchen-bot\启动独立版.pyw`。
-3. 选择 1–5 局，点击 **Start**，等待 **Ready**，切回游戏按 **F8**。可从小游戏结算、厨房菜单或 Order 画面开始，程序按固定布局推进下一步。
+2. 双击根目录 `Launch.cmd`，或运行 `.\.venv\Scripts\pythonw.exe gui.py`。
+3. 自行填写正整数局数，点击 **Start**，等待 **Ready**，切回游戏按 **F8**。可从小游戏结算、厨房菜单或 Order 画面开始，程序按固定布局推进下一步。
 4. 保持游戏在前台，测试中避免同时操作鼠标键盘。**F8** 暂停／恢复，**Escape** 停止。切换焦点会暂停游戏输入，回到游戏按 F8 恢复。
 5. 测试结束后核对结算截图与日志。这是开发实验版本，不保证无人值守完成十道。
 
@@ -84,7 +94,7 @@ GUI 在权重安装后自动选择人工标注点位模型。直接用命令行�
 
 | 文件／路径 | 职责 |
 | --- | --- |
-| `outputs/kitchen-bot/standalone.py` | 本机截图／输入、固定五局与日志 |
+| `outputs/kitchen-bot/standalone.py` | 本机截图／输入、自定义局数与日志 |
 | `perception.py`、`segmenter.py`、`icon_classifier.py` | 表面、点位、食谱与槽位识别 |
 | `planner.py`、`shuffle_state.py` | 三消状态管理与抖盘门控 |
 | `motion.py`、`motion_click.py`、`latest_click.py` | 追踪、外推与复核 |
@@ -96,7 +106,7 @@ GUI 在权重安装后自动选择人工标注点位模型。直接用命令行�
 
 当前启用权重：`segmenter-adapted.pt`、`icon-classifier.pt`、`segmenter-positive-surfaces.pt`、`point-classifier-human-paired.pt`，以及 `outputs/kitchen-labeler/point-classifier-human.pt`。压缩包还保留历史 `segmenter.pt` 和 `point-classifier.pt`。`render_samples.py`、`vision.py`、`worker.py` 为保留的历史／支持模块；合成渲染器需另备本地 3D 资源。独立版运行**不依赖 Codex 或 Computer Use**。
 
-每次运行在 `outputs/kitchen-bot/runs/` 保存 `game.mp4`、决策 JPEG、部分无损 PNG 对、`final.jpg`、`decisions.jsonl`、`inputs.jsonl`、捕获统计及总结 JSON。批次保存源码／模型指纹与过场日志。当前持续录像，没有实现用户可选的录像写入开关。公开仓库不含本机运行日志、录像、个人文件路径和原始标注。
+前端运行记录保存在 `%LOCALAPPDATA%/CollectCookingAuto/launch-…/runs/`；直接 CLI 默认写入 `outputs/kitchen-bot/runs/`。包括决策截图、`final.jpg`、JSONL 与摘要。前端录像默认关闭，可以开启；直接 CLI 默认开启录像。私人测试与标注资料不发布。
 
 离线验证：
 

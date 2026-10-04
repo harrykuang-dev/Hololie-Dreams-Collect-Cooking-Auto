@@ -3,7 +3,7 @@
 F8 starts/pauses, Escape exits. Never clicks while another window has focus.
 --replay checks recorded images without creating a capture or input adapter.
 """
-import argparse,ctypes as C,json,queue,threading,time,hashlib,shutil
+import os,argparse,ctypes as C,json,queue,threading,time,hashlib,shutil
 from ctypes import wintypes as W
 from pathlib import Path
 import cv2,numpy as np
@@ -16,6 +16,7 @@ from motion_click import choose_motion_food
 from guarded_local_relocation import choose_relocated_food
 import collections
 from supplemental_food import SupplementalFood
+from app_settings import StartHotkey, stop_hotkey_pressed
 
 class BitmapHeader(C.Structure):
     _fields_=[('size',W.DWORD),('width',W.LONG),('height',W.LONG),
@@ -37,6 +38,7 @@ class Input(C.Structure):
 class Desktop:
     def __init__(self,title):
         self.u=C.WinDLL('user32',use_last_error=True)
+        self.start_hotkey=StartHotkey()
         self.g=C.WinDLL('gdi32',use_last_error=True)
         def bind(lib,name,args,result):
             f=getattr(lib,name);f.argtypes=args;f.restype=result;return f
@@ -72,6 +74,11 @@ class Desktop:
         if not self.bitmap or not self.bits.value:raise RuntimeError('Could not create screenshot buffer')
         self.old=self.g.SelectObject(self.memory,self.bitmap)
         self.buffer=(C.c_ubyte*(self.w*self.h*4)).from_address(self.bits.value)
+    def should_stop(self):
+        stop_file=os.environ.get('COOKING_STOP_FILE')
+        return bool(stop_file and Path(stop_file).exists()) or stop_hotkey_pressed(os.environ.get('COOKING_STOP_KEY','Esc'),self.u.GetAsyncKeyState)
+    def should_toggle(self):
+        return self.start_hotkey.poll(os.environ.get('COOKING_START_KEY','F8'),self.u.GetAsyncKeyState)
     def focused(self):
         return self.u.IsWindow(self.hwnd) and not self.u.IsIconic(self.hwnd) and self.u.GetForegroundWindow()==self.hwnd
     def origin(self):
@@ -85,7 +92,7 @@ class Desktop:
         if not self.g.BitBlt(self.memory,0,0,self.w,self.h,self.screen,x,y,0x00CC0020|0x40000000):raise C.WinError(C.get_last_error())
         return np.frombuffer(self.buffer,dtype=np.uint8).reshape(self.h,self.w,4)[:,:,:3].copy()
     def click(self,x,y):
-        if not self.focused():return False
+        if self.should_stop() or not self.focused():return False
         if not 0<=x<self.w or not 0<=y<self.h:raise RuntimeError('Click is outside the game')
         ox,oy=self.origin()
         cursor_started=time.monotonic()
@@ -93,7 +100,7 @@ class Desktop:
         # Unity samples its pointer during the game loop. Give it a render
         # frame to see the move before the button-down arrives.
         time.sleep(.025)
-        if not self.focused():return False
+        if self.should_stop() or not self.focused():return False
         down=Input(0,InputUnion(mouse=MouseInput(0,0,0,2,0,0)))
         up=Input(0,InputUnion(mouse=MouseInput(0,0,0,4,0,0)))
         mouse_down_started=time.monotonic()
@@ -113,8 +120,10 @@ class Recording:
         self.desktop=desktop;self.directory=directory;self.fps=fps
         self.capture_metrics=[];self.capture_started=time.monotonic();self.packet_profiles={}
         self.condition=threading.Condition();self.latest=None;self.error=None;self.stopped=False
-        self.video=cv2.VideoWriter(str(directory/'game.mp4'),cv2.VideoWriter_fourcc(*'mp4v'),fps,(desktop.w//2*2,desktop.h//2*2))
-        if not self.video.isOpened():raise RuntimeError('Video encoder unavailable')
+        self.video=None
+        if os.environ.get('COOKING_RECORD_VIDEO', '1')=='1':
+            self.video=cv2.VideoWriter(str(directory/'game.mp4'),cv2.VideoWriter_fourcc(*'mp4v'),fps,(desktop.w//2*2,desktop.h//2*2))
+            if not self.video.isOpened():raise RuntimeError('Video encoder unavailable')
         self.thread=threading.Thread(target=self.run,daemon=True);self.thread.start()
     def run(self):
         next_frame=time.monotonic();last=None
@@ -130,7 +139,7 @@ class Recording:
                         self.condition.notify_all()
                 # When focus changes, preserve the last game frame; do not
                 # capture a different app appearing over the game rectangle.
-                if last is not None:self.video.write(last[:last.shape[0]//2*2,:last.shape[1]//2*2])
+                if self.video is not None and last is not None:self.video.write(last[:last.shape[0]//2*2,:last.shape[1]//2*2])
                 encoded=time.monotonic()
                 if frame is not None:self.capture_metrics.append((now,captured-now,encoded-captured))
                 next_frame+=1/self.fps
@@ -139,7 +148,8 @@ class Recording:
         except Exception as e:
             self.error=e
             with self.condition:self.condition.notify_all()
-        finally:self.video.release()
+        finally:
+            if self.video is not None:self.video.release()
     def frame_after(self,stamp,timeout=.5):
         deadline=time.monotonic()+timeout
         with self.condition:
@@ -204,8 +214,8 @@ def play(args,model,autostart=False):
     try:
         with (directory/'decisions.jsonl').open('w',encoding='utf8') as log, (directory/'inputs.jsonl').open('w',encoding='utf8') as inputs:
             while True:
-                if desktop.u.GetAsyncKeyState(0x1B)&0x8001:break
-                if desktop.u.GetAsyncKeyState(0x77)&1:
+                if desktop.should_stop():break
+                if desktop.should_toggle():
                     paused=not paused;fresh_after=time.monotonic();print('Paused' if paused else 'Running',flush=True)
                     if not paused and started is None:started=time.monotonic()
                 if started is not None and time.monotonic()-started>args.seconds:print('Run time limit reached');break
@@ -302,18 +312,21 @@ def play(args,model,autostart=False):
     finally:
         if last_frame is not None:writer.save(directory/'final.jpg',last_frame)
         recording.close();writer.close();desktop.close()
-        (directory/'summary.json').write_text(json.dumps({'status':planner.status(),'frames':number,'video':'game.mp4','goal_verified':False},indent=2),encoding='utf8')
+        (directory/'summary.json').write_text(json.dumps({'status':planner.status(),'frames':number,'video':'game.mp4' if recording.video is not None else None,'goal_verified':False},indent=2),encoding='utf8')
         print('Finished. Review final.jpg and game.mp4. Ten dishes are not assumed from the internal counter.',flush=True)
     return {'directory':str(directory.resolve()),'status':planner.status(),'natural_end':natural_end}
 
-if __name__=='__main__':
+def main():
     parser=argparse.ArgumentParser();parser.add_argument('--replay',type=Path);parser.add_argument('--title',default='hololive-Dreams')
     parser.add_argument('--seconds',type=int,default=300);parser.add_argument('--fps',type=int,default=20)
     parser.add_argument('--output',type=Path,default=Path(__file__).resolve().parent/'runs')
     parser.add_argument('--diagnostic-lossless-interval',type=float,default=2.0,help='Minimum seconds between failed tracking PNG pairs.')
     parser.add_argument('--point-model',default='point-classifier.pt')
-    parser.add_argument('--games',type=int,default=5,choices=range(1,6),help='Maximum test games; a fixed-version batch defaults to five games.')
-    args=parser.parse_args();model=Perception(args.point_model)
+    parser.add_argument('--autostart',action='store_true',help='Start after model loading only if the game is foreground.')
+    parser.add_argument('--games',type=int,default=5,help='Positive number of games; defaults to five.')
+    args=parser.parse_args()
+    if args.games<1:parser.error('--games must be positive')
+    model=Perception(args.point_model)
     model.supplement=SupplementalFood(model,Path(__file__).parent/'segmenter-positive-surfaces.pt',Path(__file__).parent/'point-classifier-human-paired.pt')
     if args.replay:print(json.dumps(replay(args.replay,model)))
     else:
@@ -335,9 +348,13 @@ if __name__=='__main__':
         print('Ready. Focus the game at its results, kitchen menu, or Order screen, then press F8. Escape exits.',flush=True)
         desktop=Desktop(args.title);ready=False
         try:
-            while True:
-                if desktop.u.GetAsyncKeyState(0x1B)&0x8001:break
-                if desktop.u.GetAsyncKeyState(0x77)&1:
+            if args.autostart and not desktop.should_stop() and desktop.focused():
+                ready=advance_to_order(desktop,model,session/'before-game-1')
+            while not ready:
+                if args.autostart and desktop.focused():break
+                args.autostart=False
+                if desktop.should_stop():break
+                if desktop.should_toggle():
                     if desktop.focused():ready=advance_to_order(desktop,model,session/'before-game-1')
                     break
                 time.sleep(.05)
@@ -352,3 +369,6 @@ if __name__=='__main__':
             try:ready=advance_to_order(desktop,model,session/f'to-game-{game+2}')
             finally:desktop.close()
             if not ready:print('Automatic next-game transition stopped; inspect the game or focus.',flush=True);break
+
+if __name__=='__main__':
+    main()

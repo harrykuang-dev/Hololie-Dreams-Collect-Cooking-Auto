@@ -13,7 +13,7 @@ def advance_to_order(desktop,model,directory,deadline_seconds=45):
     deadline=time.monotonic()+deadline_seconds;last_click=0;number=0
     with (directory/'transitions.jsonl').open('w',encoding='utf8') as log:
         while time.monotonic()<deadline:
-            if desktop.u.GetAsyncKeyState(0x1B)&0x8001 or not desktop.focused():return False
+            if desktop.should_stop() or not desktop.focused():return False
             frame=desktop.capture()
             if frame is None:return False
             canonical,top,scale=model.normalize(frame);state=model.screen_state.classify(canonical)
