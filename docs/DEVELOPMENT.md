@@ -12,7 +12,7 @@ py -3.13 -m venv .venv
 需使用NVIDIA GPU時，依 [PyTorch官方版本安裝表](https://pytorch.org/get-started/previous-versions/#v280)安裝與本版對應的CUDA套件：
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cu128
+.\.venv\Scripts\python.exe -m pip install --upgrade torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cu128
 ```
 
 ## 安裝模型
