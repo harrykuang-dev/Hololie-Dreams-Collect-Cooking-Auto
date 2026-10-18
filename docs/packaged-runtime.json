@@ -1,5 +1,5 @@
 {
-  "version": "ab31ff4c557d1ec0",
+  "version": "1788474ecc76cfb8",
   "files": {
     "app_settings.py": "7b9fd0c0fae454f57c5dd8ae23ace45cc85435e2425b0360b67b8f99344e2a2b",
     "async_recording.py": "3889bcb80456d06eb0cec6928224b34bf72d3a20d6541009c29b60383b9aae72",
@@ -32,7 +32,7 @@
     "segmenter.py": "8ebd2a7ff3420e45daf4d3cf552909d968c9dd52205eb9bfa5a5ca6a203122c0",
     "session_flow.py": "4bd7deab8483a1bfdddffe847b90b3440f197dfdb8bd57a89381aceaf518565c",
     "shuffle_state.py": "1bd851017b02208a7f964ca9f65300de24ea5bf311a4f365d1f55542609b7c8e",
-    "standalone.py": "74ab6c5e33c80993b7ff07a06578dbf5b18cda13b4264ab828a6c841fb8ec371",
+    "standalone.py": "07522d498a620728e656e464846da08ca2c4b6e15d2821b5305549eac3b5b479",
     "supplemental_food.py": "181f6b3daf848d43ca474efa8953891974f389729c636274ba92bc3ee1dc73f0",
     "templates/cereal-0.png": "34e08dc0131384993eb359ca13e00fcb7ccdd3e963f6f51b70189ec99b355ab5",
     "templates/cereal-1.png": "ff5b9da471115dbcd0b1e1dd2aab983af6ef1e780d971c6b1f68dbd3195035bf",
@@ -153,7 +153,8 @@
     "segmenter-adapted.pt": "65871384b6b45c36e62cc0941ac198cf863d71121371628fce228b90fc7ef1f6",
     "segmenter-positive-surfaces.pt": "b66e1a7dbc9a0da1bc6009f1bef3be40ba84d24c056766c022c9e53da2ba6c95",
     "../kitchen-labeler/point-classifier-resnet101.pt": "89de05b4e15da51e9117dfa7cfb5c69973a20e79f1165fa8811ff26b94e30619",
-    "../kitchen-labeler/point-classifier-resnet18.pt": "17dd93c60b7cbc3042775c0c471257747aa194f5f71fa611e0b71d9e0d1202ad"
+    "../kitchen-labeler/point-classifier-resnet18.pt": "17dd93c60b7cbc3042775c0c471257747aa194f5f71fa611e0b71d9e0d1202ad",
+    "game_window.py": "3db89438d59f447e3d0be5351f9adbce8d6d4cc77dc61739c0ee449a72e05a1e"
   },
   "point_model_default": "resnet18",
   "point_model_options": [
@@ -165,10 +166,12 @@
   "old_supplement_classifier_packaged": false,
   "start_requires_explicit_request_after_model_loading": true,
   "launcher_files": {
-    "gui.py": "f326930dddcc7d524541188e52eecf9a14761a21fc9b053a22beab56f0c6b72d",
+    "gui.py": "65db0c473579c5e2e16d3e2ddb9a4c0f3279a6f6ea9a5b7779ad952c6366fd41",
     "ui_text.py": "ff592a68be0f2af898ff61d29e8a217fffc428c5dc7c664ef10de4a4ced023c8",
     "model_selection.py": "5e29ba2e33f49590e8995c63d193519ef0da9bec93377750c2a5bbb44300c51f",
     "fluent_theme.py": "c6718d4a30a4aa4a7158b41f094cb078878ff33ad3dd818b09c0409172aaf2fa",
     "global_hotkey.py": "4f4b58023d9ef9247f511f908b45af988601e72ca7d2ad664ee923ab089523c0"
-  }
+  },
+  "start_requests_game_foreground": true,
+  "minimized_start_waits_for_restore": true
 }

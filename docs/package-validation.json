@@ -1,20 +1,23 @@
 {
-  "release": "v1.0.0",
-  "runtime_version": "ab31ff4c557d1ec0",
-  "runtime_fingerprints_verified": 153,
+  "release": "v1.0.1",
+  "runtime_version": "1788474ecc76cfb8",
+  "runtime_fingerprints_verified": 154,
   "model_files_verified": 5,
-  "unit_tests_passed": 26,
+  "unit_tests_passed": 36,
   "both_packaged_model_load_checks_passed": true,
   "both_load_then_cancel_checks_passed": true,
-  "source_and_embedded_ui_match": true,
-  "six_language_equal_field_height_cases": 30,
-  "button_corner_states_checked": [
-    "normal",
-    "active",
-    "pressed",
-    "focus",
-    "disabled"
+  "source_and_embedded_modules_match": [
+    "gui",
+    "game_window",
+    "standalone",
+    "fluent_theme",
+    "ui_text",
+    "model_selection",
+    "global_hotkey"
   ],
+  "start_requests_focus_before_worker_release_test_passed": true,
+  "minimized_restore_wait_test_passed": true,
+  "denied_activation_wait_test_passed": true,
   "game_inputs_during_release_checks": 0,
-  "exe_sha256": "31a3ec380521737be60cbf93e9fa4e9bdce1b33617b650e9181d805ae854138a"
+  "exe_sha256": "c46b3ee8fea4124c01823e99f87b996182b5096a9f8d87fee64343bb818a998a"
 }

@@ -1,4 +1,4 @@
-# Hololive Dreams Auto Collect Cooking — 1.0.0
+# Hololive Dreams Auto Collect Cooking — 1.0.1
 
 [English](README.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Indonesian](README.id.md) · [简体中文](README.zh-CN.md)
 
@@ -6,7 +6,7 @@ Windows版《hololive Dreams》食材妙廚房的自動料理程式。透過遊�
 
 ## 下載
 
-前往 [GitHub Releases](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.0)，將所有 `Collect-Cooking-Auto-v1.0.0-win64.7z.*` 分卷下載至同一資料夾。用7-Zip解壓 `.7z.001`，再執行解壓資料夾中的 `Collect-Cooking-Auto-v1.0.0.exe`。
+前往 [GitHub Releases](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1)，將所有 `Collect-Cooking-Auto-v1.0.1-win64.7z.*` 分卷下載至同一資料夾。用7-Zip解壓 `.7z.001`，再執行解壓資料夾中的 `Collect-Cooking-Auto-v1.0.1.exe`。
 
 請保留EXE旁的 `_internal` 資料夾。已包含Python、推論函式庫及五份模型權重。`SHA256SUMS.txt`用於核對下載檔案；`models.zip`供原始碼使用。GitHub自動產生的原始碼ZIP需另外安裝依賴與模型。
 
@@ -24,7 +24,7 @@ Windows版《hololive Dreams》食材妙廚房的自動料理程式。透過遊�
 1. 開啟遊戲，進入食材妙廚房。
 2. 執行EXE，選擇程式語言及辨識模型，輸入正整數目標局數；初次使用預設5局。
 3. 點擊「**載入模型**」，等待顯示模型已載入。
-4. 點擊「**開始**」後切回遊戲，或在遊戲中按 **F8**。保持遊戲視窗在前景且無遮擋。
+4. 點擊「**開始**」後，程式會嘗試還原遊戲視窗並切到前景，也可在遊戲中按 **F8**。若Windows阻止切換，請手動切回遊戲，並保持畫面無遮擋。
 5. **F8**暫停／繼續，**Esc**或「**停止**」結束執行。切換焦點會暫停輸入，切回遊戲按F8繼續。切換模型前先停止，再選擇並載入另一個模型。
 
 點擊快捷鍵框後，按下要使用的按鍵或Ctrl／Alt／Shift組合鍵。未完成輸入便離開欄位時，保留原設定；設定會保存供下次使用。

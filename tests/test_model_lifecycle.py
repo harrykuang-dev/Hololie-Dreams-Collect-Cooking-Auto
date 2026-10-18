@@ -35,6 +35,7 @@ class Lifecycle(unittest.TestCase):
         self.patches=[patch.object(gui,'DATA',Path(self.temp.name)),
                       patch.object(gui,'GlobalHotkey',Listener),
                       patch.object(gui,'window_scale',lambda root:1.0),
+                      patch.object(gui,'request_game_foreground'),
                       patch.object(gui.subprocess,'Popen',Process)]
         for item in self.patches:item.start()
         self.root=tk.Tk();self.root.withdraw()
@@ -77,6 +78,30 @@ class Lifecycle(unittest.TestCase):
         self.assertEqual(app.run_state,'starting')
         self.assertFalse(app.start_listener.enabled)
         self.assertEqual(app.toggle_path.read_text(),'0')
+
+    def test_explicit_start_requests_focus_before_releasing_worker(self):
+        self.ready();app=self.app
+        def activate():
+            self.assertFalse(app.start_path.exists())
+            self.assertEqual(app.run_state,'ready')
+            return False  # Windows may deny activation; the worker waits safely.
+        with patch.object(gui,'request_game_foreground',side_effect=activate) as focus:
+            app.start()
+            focus.assert_called_once_with()
+        self.assertTrue(app.start_path.exists())
+        self.assertEqual(app.run_state,'starting')
+
+    def test_loading_help_and_stopped_states_do_not_request_focus(self):
+        app=self.app
+        with patch.object(gui,'request_game_foreground') as focus:
+            app.start()
+            app.load_models();app.start()
+            focus.assert_not_called()
+        gui.publish_state(app.state_path,'ready');app.poll()
+        with patch.object(gui,'request_game_foreground') as focus:
+            app.show_model_help();app.start()
+            app.close_model_help();app.stop();app.start()
+            focus.assert_not_called()
 
     def test_help_disables_start_and_preserves_loaded_model(self):
         self.ready();app=self.app
@@ -189,6 +214,20 @@ class WorkerGate(unittest.TestCase):
 
 
 class ForegroundGate(unittest.TestCase):
+    def test_async_restore_finishes_before_capture_adapter_is_used(self):
+        import standalone
+        desktop=SimpleNamespace(should_stop=lambda:False,focused=lambda:True,close=lambda:None)
+        with tempfile.TemporaryDirectory() as folder:
+            args=['standalone.py','--games','1','--wait-for-focus','--output',folder]
+            with patch.object(sys,'argv',args),\
+                 patch.object(standalone,'Desktop',side_effect=[RuntimeError('Game window minimized: hololive-Dreams'),desktop]) as create,\
+                 patch.object(standalone,'advance_to_order',return_value=True) as transition,\
+                 patch.object(standalone,'play',return_value={'natural_end':True}),\
+                 patch.dict(gui.os.environ,{'COOKING_STOP_FILE':''}):
+                standalone.main(model=SimpleNamespace())
+                self.assertEqual(create.call_count,2)
+                self.assertIs(transition.call_args.args[0],desktop)
+
     def test_explicit_start_waits_for_game_foreground_and_reuses_models(self):
         import standalone
         states=[];checks=[]

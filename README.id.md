@@ -1,4 +1,4 @@
-# Hololive Dreams Auto Collect Cooking — 1.0.0
+# Hololive Dreams Auto Collect Cooking — 1.0.1
 
 [English](README.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Indonesian](README.id.md) · [简体中文](README.zh-CN.md)
 
@@ -6,7 +6,7 @@ Program memasak otomatis untuk Collect Cooking pada *hololive Dreams* versi Wind
 
 ## Unduh
 
-Buka [GitHub Releases](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.0) dan unduh semua bagian `Collect-Cooking-Auto-v1.0.0-win64.7z.*` ke folder yang sama. Ekstrak `.7z.001` dengan 7-Zip, lalu jalankan `Collect-Cooking-Auto-v1.0.0.exe` di dalam folder hasil ekstraksi.
+Buka [GitHub Releases](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1) dan unduh semua bagian `Collect-Cooking-Auto-v1.0.1-win64.7z.*` ke folder yang sama. Ekstrak `.7z.001` dengan 7-Zip, lalu jalankan `Collect-Cooking-Auto-v1.0.1.exe` di dalam folder hasil ekstraksi.
 
 Pertahankan folder `_internal` di samping EXE. Python, pustaka inferensi dan kelima model sudah disertakan. Gunakan `SHA256SUMS.txt` untuk memeriksa unduhan. `models.zip` ditujukan untuk menjalankan kode sumber. ZIP sumber dari GitHub memerlukan pemasangan dependensi dan model secara terpisah.
 
@@ -24,7 +24,7 @@ Pertahankan folder `_internal` di samping EXE. Python, pustaka inferensi dan kel
 1. Buka game dan masuk ke Collect Cooking.
 2. Jalankan EXE, pilih bahasa dan model, lalu masukkan target permainan berupa bilangan bulat positif. Nilai awalnya lima permainan.
 3. Klik **Muat model** dan tunggu hingga siap.
-4. Klik **Mulai** lalu kembali ke game, atau tekan **F8** di dalam game. Pertahankan jendela game di depan tanpa tertutup.
+4. Klik **Mulai** agar program mencoba memulihkan jendela game dan membawanya ke depan, atau tekan **F8** di dalam game. Jika Windows memblokir perpindahan, kembali ke game secara manual. Pastikan jendela game tidak tertutup.
 5. **F8** menjeda/melanjutkan; **Esc** atau **Hentikan** mengakhiri sesi. Beralih ke jendela lain menjeda input. Kembali ke game lalu tekan F8 untuk melanjutkan. Hentikan sebelum memilih dan memuat model lain.
 
 Klik kolom pintasan, lalu tekan tombol atau kombinasi Ctrl/Alt/Shift yang diinginkan. Meninggalkan kolom sebelum menyelesaikan input mempertahankan pengaturan sebelumnya. Pengaturan disimpan untuk sesi berikutnya.

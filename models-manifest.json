@@ -1,5 +1,5 @@
 {
-  "runtime_version": "ab31ff4c557d1ec0",
+  "runtime_version": "1788474ecc76cfb8",
   "point_model_default": "resnet18",
   "point_model_options": [
     "resnet18",

@@ -14,7 +14,7 @@ a = Analysis(['gui.py'], pathex=[str(root/'outputs/kitchen-bot')],
              hookspath=[], runtime_hooks=[], noarchive=False)
 pyz = PYZ(a.pure)
 exe = EXE(pyz, a.scripts, [], exclude_binaries=True,
-          name='Collect-Cooking-Auto-v1.0.0', debug=False, strip=False,
+          name='Collect-Cooking-Auto-v1.0.1', debug=False, strip=False,
           upx=False, console=False, icon=str(root/'assets/cooking-icon.ico'))
 collect = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False,
-                  name='Collect-Cooking-Auto-v1.0.0')
+                  name='Collect-Cooking-Auto-v1.0.1')

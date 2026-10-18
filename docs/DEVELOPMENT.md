@@ -17,10 +17,10 @@ py -3.13 -m venv .venv
 
 ## 安裝模型
 
-從v1.0.0 Release下載 `models.zip`，保留原檔名與壓縮包內路徑：
+從v1.0.1 Release下載 `models.zip`，保留原檔名與壓縮包內路徑：
 
 ```powershell
-gh release download v1.0.0 --repo harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto --pattern models.zip --dir downloads
+gh release download v1.0.1 --repo harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto --pattern models.zip --dir downloads
 .\.venv\Scripts\python.exe tools\install_models.py downloads\models.zip
 .\.venv\Scripts\python.exe tools\check_runtime.py
 ```
@@ -50,7 +50,7 @@ gh release download v1.0.0 --repo harrykuang-dev/Hololie-Dreams-Collect-Cooking-
 .\build.ps1
 ```
 
-產物為 `dist/Collect-Cooking-Auto-v1.0.0/`。EXE與 `_internal` 需一起保留。建置腳本會複製README、文件、模型清單及第三方授權。
+產物為 `dist/Collect-Cooking-Auto-v1.0.1/`。EXE與 `_internal` 需一起保留。建置腳本會複製README、文件、模型清單及第三方授權。
 
 ## 測試
 
@@ -59,12 +59,12 @@ gh release download v1.0.0 --repo harrykuang-dev/Hololie-Dreams-Collect-Cooking-
 .\.venv\Scripts\python.exe tools\check_runtime.py
 ```
 
-測試涵蓋載入與開始分離、快捷鍵、Num Lock／Alt狀態、停止信號、診斷容量、座標換算、移動驗證與槽位變化。測試中的遊戲輸入介面使用替代物件。
+測試涵蓋開始時切回遊戲、最小化還原、前景切換遭拒時等待、載入與開始分離、快捷鍵、Num Lock／Alt狀態、停止信號、診斷容量、座標換算、移動驗證與槽位變化。測試中的遊戲輸入介面使用替代物件。
 
 封裝程式可只載入與暖機模型，核對後退出：
 
 ```powershell
-.\Collect-Cooking-Auto-v1.0.0.exe --worker --model resnet18 --check-model-only --games 1 --output .\model-check\runs --control-file .\model-check\stop
+.\Collect-Cooking-Auto-v1.0.1.exe --worker --model resnet18 --check-model-only --games 1 --output .\model-check\runs --control-file .\model-check\stop
 ```
 
 將 `resnet18` 改成 `resnet101` 可核對進階模型。此命令不建立遊戲擷取或輸入介面，結果寫入 `model-check/model-check.json`。

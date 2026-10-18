@@ -15,12 +15,13 @@ import tempfile
 import shutil
 import webbrowser
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 ROOT = Path(__file__).resolve().parent
 BOT = ROOT / 'outputs' / 'kitchen-bot'
 sys.path.insert(0,str(BOT))
 from app_settings import parse_stop_hotkey, captured_hotkey, hotkeys_conflict
 from global_hotkey import GlobalHotkey
+from game_window import request_game_foreground
 from model_selection import DEFAULT_MODEL, MODEL_FILES, point_model
 from ui_text import UI
 DATA = Path(os.environ.get('LOCALAPPDATA', str(Path.home()))) / 'CollectCookingAuto'
@@ -390,6 +391,7 @@ class CookingApp:
 
     def start(self):
         if not self.child or self.run_state!='ready' or self.help_dialog is not None or self.closing:return
+        request_game_foreground()
         pending=self.start_path.with_suffix('.pending')
         pending.write_text(json.dumps({'start':True}),encoding='utf8')
         pending.replace(self.start_path)

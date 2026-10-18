@@ -17,6 +17,7 @@ from guarded_local_relocation import choose_relocated_food
 import collections
 from supplemental_food import SelectedSupplement
 from app_settings import StartHotkey, stop_hotkey_pressed
+from game_window import GAME_TITLE
 
 class BitmapHeader(C.Structure):
     _fields_=[('size',W.DWORD),('width',W.LONG),('height',W.LONG),
@@ -64,6 +65,7 @@ class Desktop:
         except AttributeError:self.u.SetProcessDPIAware()
         self.hwnd=self.u.FindWindowW(None,title)
         if not self.hwnd:raise RuntimeError('Game window not found: '+title)
+        if self.u.IsIconic(self.hwnd):raise RuntimeError('Game window minimized: '+title)
         rect=W.RECT()
         if not self.u.GetClientRect(self.hwnd,C.byref(rect)):raise C.WinError(C.get_last_error())
         self.w,self.h=rect.right,rect.bottom
@@ -292,7 +294,7 @@ def load_models(point_model):
 
 
 def main(model=None,status_callback=None):
-    parser=argparse.ArgumentParser();parser.add_argument('--replay',type=Path);parser.add_argument('--title',default='hololive-Dreams')
+    parser=argparse.ArgumentParser();parser.add_argument('--replay',type=Path);parser.add_argument('--title',default=GAME_TITLE)
     parser.add_argument('--seconds',type=int,default=300);parser.add_argument('--fps',type=int,default=20)
     parser.add_argument('--output',type=Path,default=Path(__file__).resolve().parent/'runs')
     parser.add_argument('--diagnostic-lossless-interval',type=float,default=2.0,help='Minimum seconds between failed tracking PNG pairs.')
@@ -342,7 +344,7 @@ def main(model=None,status_callback=None):
                     desktop=Desktop(args.title)
                     break
                 except RuntimeError as error:
-                    if not str(error).startswith('Game window not found:'):raise
+                    if not str(error).startswith(('Game window not found:','Game window minimized:')):raise
                     time.sleep(.1)
         else:
             desktop=Desktop(args.title)

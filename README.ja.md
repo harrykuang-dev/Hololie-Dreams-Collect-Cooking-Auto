@@ -1,4 +1,4 @@
-# Hololive Dreams Auto Collect Cooking — 1.0.0
+# Hololive Dreams Auto Collect Cooking — 1.0.1
 
 [English](README.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Indonesian](README.id.md) · [简体中文](README.zh-CN.md)
 
@@ -6,7 +6,7 @@ Windows版『hololive Dreams』の「そろえてクッキング」を自動操�
 
 ## ダウンロード
 
-[GitHub Releases](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.0)から `Collect-Cooking-Auto-v1.0.0-win64.7z.*` の全分割ファイルを同じフォルダーにダウンロードしてください。7-Zipで `.7z.001` を展開し、フォルダー内の `Collect-Cooking-Auto-v1.0.0.exe` を実行します。
+[GitHub Releases](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1)から `Collect-Cooking-Auto-v1.0.1-win64.7z.*` の全分割ファイルを同じフォルダーにダウンロードしてください。7-Zipで `.7z.001` を展開し、フォルダー内の `Collect-Cooking-Auto-v1.0.1.exe` を実行します。
 
 EXEの隣にある `_internal` フォルダーも必要です。Python、推論ライブラリ、5個の学習済みモデルを同梱しています。ダウンロードの確認には `SHA256SUMS.txt` を使用できます。`models.zip` はソースから実行する場合のモデルです。GitHubのソースZIPでは依存パッケージとモデルを別途導入してください。
 
@@ -24,7 +24,7 @@ EXEの隣にある `_internal` フォルダーも必要です。Python、推論�
 1. ゲームを開き、「そろえてクッキング」に入ります。
 2. EXEを実行し、言語、認識モデル、1以上の目標回数を設定します。初期値は5回です。
 3. 「**モデルを読み込む**」をクリックし、準備完了を待ちます。
-4. 「**開始**」をクリックしてゲームに戻るか、ゲーム内で **F8** を押します。ゲームを前面に表示し、他のウィンドウで隠さないでください。
+4. 「**開始**」をクリックすると、プログラムがゲームの最小化を解除し、前面への切り替えを試みます。ゲーム内で **F8** を押して開始することもできます。Windowsに切り替えを制限された場合は手動でゲームに戻り、他のウィンドウで隠さないでください。
 5. **F8** で一時停止／再開、**Esc** または「**停止**」で終了します。別のウィンドウに移ると入力を一時停止します。ゲームに戻ってF8で再開できます。モデルを変更する場合は停止してから選び直し、再読み込みしてください。
 
 ショートカット欄をクリックし、キーまたはCtrl／Alt／Shiftとの組み合わせを押すと変更できます。入力を完了せずに欄を離れた場合は以前の設定を保持します。設定は次回起動時にも使用されます。
