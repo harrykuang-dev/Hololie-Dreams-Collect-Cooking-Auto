@@ -44,6 +44,7 @@ class Perception:
             self.classifier=IconClassifier(self.device)
             if (Path(__file__).parent/point_model).exists():
                 self.point_classifier=IconClassifier(self.device,point_model)
+        self.human_point_model=bool(self.point_classifier and self.point_classifier.is_human_point_model)
     def normalize(self,im):
         h,w=im.shape[:2];top=max(0,h-round(w*9/16))
         return cv2.resize(im[top:,:],(1536,864)),top,w/1536
@@ -125,7 +126,7 @@ class Perception:
                     x1,y1,x2,y2=c['box'];crops.append(canonical[max(0,y1-4):min(864,y2+4),max(0,x1-4):min(1536,x2+4)])
                 local_crops=[canonical[max(0,c['cy']-32):min(864,c['cy']+32),max(0,c['cx']-32):min(1536,c['cx']+32)] for c in candidates]
                 local_checks=(self.point_classifier or self.classifier).classify(local_crops)
-                if 'human' in self.point_model:
+                if self.human_point_model:
                     # Ordinary human-point decisions do not use box predictions.
                     # Compute boxes only when a same-food followup may need the
                     # second agreement in place of strong surface segmentation.
@@ -173,7 +174,7 @@ class Perception:
                 cv2.circle(canonical,(c['cx'],c['cy']),5,(0,0,255),2)
                 cv2.putText(canonical,c['label'],(c['cx'],c['cy']),cv2.FONT_HERSHEY_SIMPLEX,.45,(0,0,0),2)
             cv2.imwrite(str(debug),canonical)
-        return {'candidates':candidates,'recipe':recipe,'counters':counters,'tray':tray,'overlay':overlay,'complete_overlay':complete_overlay,'phase':state['phase'],'screen_scores':state,'shuffle':shuffle,'human_point_model':'human' in self.point_model,'order':state['order'],'scale':scale,'top':top,'seconds':round(time.perf_counter()-t0,3),'model_validation':self.validation}
+        return {'candidates':candidates,'recipe':recipe,'counters':counters,'tray':tray,'overlay':overlay,'complete_overlay':complete_overlay,'phase':state['phase'],'screen_scores':state,'shuffle':shuffle,'human_point_model':self.human_point_model,'order':state['order'],'scale':scale,'top':top,'seconds':round(time.perf_counter()-t0,3),'model_validation':self.validation}
 
 if __name__=='__main__':
     perception=Perception()

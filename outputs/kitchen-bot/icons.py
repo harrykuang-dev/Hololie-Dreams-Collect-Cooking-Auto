@@ -17,6 +17,9 @@ class Icons:
                 ref=cv2.resize(im,(width,height),interpolation=cv2.INTER_AREA)
                 mask=(ref[:,:,3]>180).astype(np.uint8)*255
                 self.bank.append((label,ref[:,:,:3],mask))
+        missing=set(LABELS.values())-{label for label,ref,mask in self.bank}
+        if missing:
+            raise FileNotFoundError('Missing ingredient icon templates in '+str(assets)+': '+', '.join(sorted(missing)))
 
     def classify(self,crop,center=None):
         ranked={}; locations={}
@@ -44,8 +47,10 @@ class Icons:
             if np.count_nonzero(foreground)>600 and score<.96:score=.6*score+.4*similarity
             if score>ranked.get(label,-1):ranked[label]=score;locations[label]=(loc,ref.shape[:2])
         order=sorted(ranked.items(),key=lambda x:-x[1])
+        if not order:
+            return {'label':'background','score':0.0,'margin':0.0,'alternatives':[],'location':None}
         label,score=order[0]
-        return {'label':label,'score':round(score,3),'margin':round(score-order[1][1],3),'alternatives':order[:3],'location':locations[label]}
+        return {'label':label,'score':round(score,3),'margin':round(score-(order[1][1] if len(order)>1 else 0),3),'alternatives':order[:3],'location':locations[label]}
 
     def recipe(self,canonical):
         return [self.classify(canonical[60:150,560+141*i:695+141*i],center=(64,47)) for i in range(3)]

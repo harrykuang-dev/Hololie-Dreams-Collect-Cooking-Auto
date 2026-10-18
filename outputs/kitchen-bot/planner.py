@@ -1,6 +1,7 @@
 """Persistent conservative three-match planner driven by fresh screenshots."""
 from collections import Counter
 import time,math
+from radius_policy import exposed_radius
 
 class Planner:
     def __init__(self):
@@ -143,6 +144,10 @@ class Planner:
                 and c.get('surface_label')==c['label']
                 and c.get('surface_confidence',c['confidence'])>=.95):
                 minimum=min(minimum,10)
+            minimum, radius_guard = exposed_radius(c, minimum,
+                human=r.get('human_point_model'), active=active, counters=counters,
+                recipe=self.recipe, inventory=self.inventory)
+            if radius_guard:c={**c,'radius_guard':radius_guard}
             if c['confidence']<.94 or c['radius']<minimum:continue
             if c['cx']<350 or c['cx']>1190 or c['cy']<185 or c['cy']>720:continue
             if any(math.hypot(c['cx']-x,c['cy']-y)<25 for x,y,t in self.bad):continue
@@ -161,15 +166,17 @@ class Planner:
                 option_needed=option['label'] in active
                 planned={**option,'counters':counters,'needed':option_needed}
                 proposal={'kind':'food','reason':'needed ingredient' if option_needed else 'finish tray triple','label':option['label'],'confidence':option['confidence'],'radius':option['radius'],'x':option['x'],'y':option['y']}
+                if option.get('radius_guard'):
+                    proposal['radius_guard']=option['radius_guard']
+                    proposal['minimum_point_score']=.995
                 self.food_options.append({'action':proposal,'planned':planned})
             c=targets[0]
             needed=c['label'] in active
             self.planned={**c,'counters':counters,'needed':needed}
-            return {'kind':'food','reason':'needed ingredient' if needed else 'finish tray triple','label':c['label'],'confidence':c['confidence'],'radius':c['radius'],'x':c['x'],'y':c['y']}
+            return dict(self.food_options[0]['action'])
         # The interval only debounces a missed input; the rendered button,
         # rather than an assumed cooldown duration, determines availability.
-        if r.get('shuffle',{}).get('ready',False) and now-self.shuffle_at>1.5:
-            self.shuffle_at=now
+        if r.get('shuffle',{}).get('ready',False) and now-self.shuffle_at>=5.0:
             return {'kind':'shuffle','reason':'needed ingredients hidden',**self.point(r,235,750)}
         # Non-target triples can free space. Start only with enough visibly
         # distinct pieces and room for the entire triple.

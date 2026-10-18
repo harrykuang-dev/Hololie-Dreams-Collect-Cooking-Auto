@@ -1,5 +1,6 @@
 """Only recognize the kitchen's bottom-right Next/OK/Play control."""
 import cv2,numpy as np
+import diagnostic_store as diagnostics
 
 def has_next_button(canonical):
     roi=canonical[760:810,1190:1460]
@@ -11,7 +12,7 @@ def advance_to_order(desktop,model,directory,deadline_seconds=45):
     import time,json
     directory.mkdir(parents=True,exist_ok=True)
     deadline=time.monotonic()+deadline_seconds;last_click=0;number=0
-    with (directory/'transitions.jsonl').open('w',encoding='utf8') as log:
+    with diagnostics.open_log(directory/'transitions.jsonl') as log:
         while time.monotonic()<deadline:
             if desktop.should_stop() or not desktop.focused():return False
             frame=desktop.capture()
@@ -19,7 +20,8 @@ def advance_to_order(desktop,model,directory,deadline_seconds=45):
             canonical,top,scale=model.normalize(frame);state=model.screen_state.classify(canonical)
             if state['phase']=='order':return True
             if state['phase'] in ['unknown','playing','results'] and has_next_button(canonical) and time.monotonic()-last_click>1.2:
-                number+=1;file=directory/f'transition-{number:02}.jpg';cv2.imwrite(str(file),frame)
+                number+=1;file=directory/f'transition-{number:02}.jpg'
+                if not diagnostics.save_frame(file,frame):cv2.imwrite(str(file),frame)
                 if not desktop.click(round(1300*scale),round(785*scale+top)):return False
                 log.write(json.dumps({'image':str(file.resolve()),'state':state,'point':[1300,785],'at':round(time.time()*1000)})+'\n');log.flush();last_click=time.monotonic()
             time.sleep(.1)

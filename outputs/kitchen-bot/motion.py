@@ -23,7 +23,18 @@ def adjusted_point(old,old_stamp,current,current_stamp,point,lead=.10,max_extrap
         # A flat, unchanged patch has no trackable texture but is stationary.
         aa=old[max(0,y-radius):min(h,y+radius),max(0,x-radius):min(w,x+radius)]
         bb=current[max(0,y-radius):min(h,y+radius),max(0,x-radius):min(w,x+radius)]
-        return result(point,point) if aa.size and np.mean(np.abs(aa.astype(float)-bb.astype(float)))<3 else reject('insufficient_tracks')
+        if aa.size and np.mean(np.abs(aa.astype(float)-bb.astype(float)))<3:
+            # A white center alone can stay unchanged while its boundary moves.
+            # Only this low-texture fallback examines the surrounding 96px patch.
+            boundary_radius=48
+            left=old[max(0,y-boundary_radius):min(h,y+boundary_radius),max(0,x-boundary_radius):min(w,x+boundary_radius)]
+            right=current[max(0,y-boundary_radius):min(h,y+boundary_radius),max(0,x-boundary_radius):min(w,x+boundary_radius)]
+            difference=np.abs(left.astype(np.float32)-right.astype(np.float32))
+            mean=float(difference.mean());changed=float((difference.max(2)>20).mean())
+            if diagnostics is not None:diagnostics.update(boundary_mean_difference=mean,boundary_changed_fraction=changed)
+            if mean<3 and changed<.02:return result(point,point)
+            return reject('low_texture_boundary_changed')
+        return reject('insufficient_tracks')
     flows=(moved-grid).reshape(-1,2)[good];flow=np.median(flows,axis=0)
     if diagnostics is not None:diagnostics.update(flow=flow.tolist(),dispersion=float(np.median(np.linalg.norm(flows-flow,axis=1))))
     if np.median(np.linalg.norm(flows-flow,axis=1))>2.5 or np.linalg.norm(flow)>70:return reject('inconsistent_or_large_flow')

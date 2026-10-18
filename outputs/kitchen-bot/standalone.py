@@ -15,7 +15,7 @@ from session_flow import advance_to_order
 from motion_click import choose_motion_food
 from guarded_local_relocation import choose_relocated_food
 import collections
-from supplemental_food import SupplementalFood
+from supplemental_food import SelectedSupplement
 from app_settings import StartHotkey, stop_hotkey_pressed
 
 class BitmapHeader(C.Structure):
@@ -124,73 +124,13 @@ class Desktop:
         self.g.SelectObject(self.memory,self.old);self.g.DeleteObject(self.bitmap)
         self.g.DeleteDC(self.memory);self.u.ReleaseDC(None,self.screen)
 
-class Recording:
-    """Capture/video encoding runs separately from neural inference."""
-    def __init__(self,desktop,directory,fps=10):
-        self.desktop=desktop;self.directory=directory;self.fps=fps
-        self.capture_metrics=[];self.capture_started=time.monotonic();self.packet_profiles={}
-        self.condition=threading.Condition();self.latest=None;self.error=None;self.stopped=False
-        self.video=None
-        if os.environ.get('COOKING_RECORD_VIDEO', '1')=='1':
-            self.video=cv2.VideoWriter(str(directory/'game.mp4'),cv2.VideoWriter_fourcc(*'mp4v'),fps,(desktop.w//2*2,desktop.h//2*2))
-            if not self.video.isOpened():raise RuntimeError('Video encoder unavailable')
-        self.thread=threading.Thread(target=self.run,daemon=True);self.thread.start()
-    def run(self):
-        next_frame=time.monotonic();last=None
-        try:
-            while not self.stopped:
-                now=time.monotonic();frame=self.desktop.capture();captured=time.monotonic()
-                if frame is not None:
-                    last=frame
-                    with self.condition:
-                        self.latest=(now,frame)
-                        self.packet_profiles[now]={'capture_started':now,'capture_completed':captured,'capture_ms':(captured-now)*1000}
-                        if len(self.packet_profiles)>120:del self.packet_profiles[min(self.packet_profiles)]
-                        self.condition.notify_all()
-                # When focus changes, preserve the last game frame; do not
-                # capture a different app appearing over the game rectangle.
-                if self.video is not None and last is not None:self.video.write(last[:last.shape[0]//2*2,:last.shape[1]//2*2])
-                encoded=time.monotonic()
-                if frame is not None:self.capture_metrics.append((now,captured-now,encoded-captured))
-                next_frame+=1/self.fps
-                time.sleep(max(0,next_frame-time.monotonic()))
-                if time.monotonic()-next_frame>1/self.fps:next_frame=time.monotonic()
-        except Exception as e:
-            self.error=e
-            with self.condition:self.condition.notify_all()
-        finally:
-            if self.video is not None:self.video.release()
-    def frame_after(self,stamp,timeout=.5):
-        deadline=time.monotonic()+timeout
-        with self.condition:
-            while not self.error and not self.stopped:
-                if self.latest is not None and self.latest[0]>=stamp:return self.latest[0],self.latest[1].copy()
-                remaining=deadline-time.monotonic()
-                if remaining<=0:return None
-                self.condition.wait(remaining)
-            if self.error:raise self.error
-            return None
-    def packet_profile(self,stamp):
-        with self.condition:return dict(self.packet_profiles.get(stamp,{}))
-    def latest_packet(self):
-        with self.condition:
-            if self.latest is None:return None
-            return self.latest[0],self.latest[1].copy()
-    def close(self):
-        self.stopped=True;self.thread.join(timeout=3)
-        import statistics
-        if self.capture_metrics:
-            stamps=[v[0] for v in self.capture_metrics]
-            gaps=[b-a for a,b in zip(stamps,stamps[1:])]
-            metrics={'requested_fps':self.fps,'captured_frames':len(stamps),'actual_average_fps':(len(stamps)-1)/(stamps[-1]-stamps[0]) if len(stamps)>1 else None,
-                     'median_capture_ms':statistics.median(v[1] for v in self.capture_metrics)*1000,
-                     'median_encode_ms':statistics.median(v[2] for v in self.capture_metrics)*1000,
-                     'median_interval_ms':statistics.median(gaps)*1000 if gaps else None,
-                     'note':'Actual frame intervals include focus pauses; no exposure timestamp changes.'}
-            (self.directory/'capture-profile.json').write_text(json.dumps(metrics,indent=2),encoding='utf8')
+from async_recording import Recording
+import diagnostic_store as diagnostics
 
 class FrameWriter:
     def __init__(self):
+        self.thread=None;self.error=None
+        if diagnostics.mode()!='legacy':return
         self.jobs=queue.Queue();self.error=None
         self.thread=threading.Thread(target=self.run,daemon=True);self.thread.start()
     def run(self):
@@ -203,9 +143,11 @@ class FrameWriter:
             except Exception as e:self.error=e
             finally:self.jobs.task_done()
     def save(self,file,frame):
+        if diagnostics.save_frame(file,frame):return
         if self.error:raise self.error
         self.jobs.put((file,frame.copy()))
-    def close(self):self.jobs.put(None);self.jobs.join();self.thread.join()
+    def close(self):
+        if self.thread is not None:self.jobs.put(None);self.jobs.join();self.thread.join()
 
 def replay(file,model):
     frame=cv2.imread(str(file))
@@ -213,24 +155,28 @@ def replay(file,model):
     result=model.analyze(frame,fast=True);planner=Planner()
     return {'action':planner.propose(result),'status':planner.status(),'perception':result}
 
-def play(args,model,autostart=False):
+def play(args,model,autostart=False,status_callback=None):
     directory=args.output/('standalone-'+str(int(time.time()*1000)))
     directory.mkdir(parents=True,exist_ok=True)
     desktop=Desktop(args.title);recording=Recording(desktop,directory,args.fps);writer=FrameWriter();planner=Planner()
     print('Ready. Focus the game at its Order screen, then press F8. F8 pauses; Escape exits.',flush=True)
     print('Recording/log directory: '+str(directory.resolve()),flush=True)
     paused=not autostart;fresh_after=time.monotonic();number=0;last_report=0;last_frame=None;started=time.monotonic() if autostart else None;natural_end=False;last_lossless=0
-    if autostart:print('Continuing the next test game automatically.',flush=True)
+    if autostart:print('Continuing the next game automatically.',flush=True)
+    if status_callback:status_callback('running' if autostart else 'paused')
     try:
-        with (directory/'decisions.jsonl').open('w',encoding='utf8') as log, (directory/'inputs.jsonl').open('w',encoding='utf8') as inputs:
+        with diagnostics.open_log(directory/'decisions.jsonl') as log, diagnostics.open_log(directory/'inputs.jsonl') as inputs:
             while True:
                 if desktop.should_stop():break
                 if desktop.should_toggle():
                     paused=not paused;fresh_after=time.monotonic();print('Paused' if paused else 'Running',flush=True)
+                    if status_callback:status_callback('paused' if paused else 'running')
                     if not paused and started is None:started=time.monotonic()
                 if started is not None and time.monotonic()-started>args.seconds:print('Run time limit reached');break
                 if not desktop.focused():
-                    if not paused:paused=True;print('Focus changed; paused. Return to game and press F8.',flush=True)
+                    if not paused:
+                        paused=True;print('Focus changed; paused. Return to game and press F8.',flush=True)
+                        if status_callback:status_callback('paused')
                 if paused:time.sleep(.05);continue
                 packet=recording.frame_after(fresh_after)
                 if packet is None:continue
@@ -278,6 +224,18 @@ def play(args,model,autostart=False):
                                 if tracked_followup is not None:followup_base=(latest[0],latest[1],tracked_followup)
                     else:
                         action={'kind':'wait','reason':'latest frame unavailable'};planner.planned=None
+                if action['kind']=='shuffle':
+                    shuffle_packet=recording.latest_packet()
+                    shuffle_guard={'minimum_interval_s':5.0,'elapsed_s':time.monotonic()-planner.shuffle_at}
+                    if shuffle_packet:
+                        shuffle_view,_,_=model.normalize(shuffle_packet[1])
+                        shuffle_phase=model.screen_state.classify(shuffle_view)['phase']
+                        from shuffle_state import shuffle_state
+                        shuffle_guard.update(shuffle_state(shuffle_view,shuffle_phase),capture_age_ms=(time.monotonic()-shuffle_packet[0])*1000)
+                    allowed=(shuffle_packet is not None and shuffle_guard.get('ready',False)
+                             and shuffle_guard['elapsed_s']>=5.0 and shuffle_guard.get('capture_age_ms',999)<250)
+                    action['shuffle_guard']=shuffle_guard
+                    if not allowed:action={'kind':'wait','reason':'minimum shuffle interval or button not ready','shuffle_guard':shuffle_guard}
                 file=directory/f'frame-{number:05}.jpg';writer.save(file,frame)
                 log.write(json.dumps({'frame':str(file.resolve()),'at':round(time.time()*1000),'action':action,'status':planner.status(),'perception':perception,'analysis_ms':round((time.monotonic()-begin)*1000),'timing_diagnostics':decision_profile})+'\n');log.flush()
                 if time.monotonic()-last_report>5:print(json.dumps(planner.status()),flush=True);last_report=time.monotonic()
@@ -300,6 +258,7 @@ def play(args,model,autostart=False):
                 input_started=time.monotonic()
                 if not desktop.click(*click_point):paused=True;continue
                 input_completed=time.monotonic()
+                if action['kind']=='shuffle':planner.shuffle_at=desktop.last_click_profile['mouse_down_dispatch_started']
                 inputs.write(json.dumps({'decision':number,'kind':action['kind'],'label':action.get('label'),'point':list(click_point),'at':round(time.time()*1000),'native_input_diagnostics':desktop.last_click_profile,'latest_frame_age_at_mouse_down_ms':(desktop.last_click_profile['mouse_down_dispatch_started']-latest[0])*1000 if action['kind']=='food' and latest else None,'input_started':input_started,'input_completed':input_completed,'input_ms':(input_completed-input_started)*1000,'frame_age_at_input_start_ms':(input_started-stamp)*1000,'latest_frame_age_at_input_start_ms':(input_started-latest[0])*1000 if action['kind']=='food' and latest else None})+'\n');inputs.flush()
                 if action['kind']=='food':
                     planner.commit()
@@ -326,26 +285,42 @@ def play(args,model,autostart=False):
         print('Finished. Review final.jpg and game.mp4. Ten dishes are not assumed from the internal counter.',flush=True)
     return {'directory':str(directory.resolve()),'status':planner.status(),'natural_end':natural_end}
 
-def main():
+def load_models(point_model):
+    model=Perception(point_model)
+    model.supplement=SelectedSupplement(model,Path(__file__).parent/'segmenter-positive-surfaces.pt')
+    return model
+
+
+def main(model=None,status_callback=None):
     parser=argparse.ArgumentParser();parser.add_argument('--replay',type=Path);parser.add_argument('--title',default='hololive-Dreams')
     parser.add_argument('--seconds',type=int,default=300);parser.add_argument('--fps',type=int,default=20)
     parser.add_argument('--output',type=Path,default=Path(__file__).resolve().parent/'runs')
     parser.add_argument('--diagnostic-lossless-interval',type=float,default=2.0,help='Minimum seconds between failed tracking PNG pairs.')
-    parser.add_argument('--point-model',default='point-classifier.pt')
+    parser.add_argument('--point-model',default='../kitchen-labeler/point-classifier-resnet18.pt')
     parser.add_argument('--autostart',action='store_true',help='Start after model loading only if the game is foreground.')
+    parser.add_argument('--wait-for-focus',action='store_true',help='After an explicit start request, wait for the game foreground.')
     parser.add_argument('--games',type=int,default=5,help='Positive number of games; defaults to five.')
     args=parser.parse_args()
     if args.games<1:parser.error('--games must be positive')
-    model=Perception(args.point_model)
-    model.supplement=SupplementalFood(model,Path(__file__).parent/'segmenter-positive-surfaces.pt',Path(__file__).parent/'point-classifier-human-paired.pt')
+    if model is None:model=load_models(args.point_model)
     if args.replay:print(json.dumps(replay(args.replay,model)))
     else:
         session=args.output/('session-'+str(int(time.time()*1000)));session.mkdir(parents=True,exist_ok=True);results=[]
-        source=Path(__file__).resolve().parent;fingerprints={};(session/'source').mkdir()
+        source=Path(__file__).resolve().parent;fingerprints={}
         # UI templates affect decisions just as source code and weights do.
-        for file in sorted(list(source.glob('*.py'))+list(source.glob('*.png'))):
-            shutil.copy2(file,session/'source'/file.name);fingerprints[file.name]=hashlib.sha256(file.read_bytes()).hexdigest()
-        for filename in [args.point_model,'segmenter-adapted.pt','icon-classifier.pt','segmenter-positive-surfaces.pt','point-classifier-human-paired.pt']:
+        for file in sorted(list(source.glob('*.py'))+list(source.rglob('*.png'))):
+            relative=file.relative_to(source).as_posix()
+            if diagnostics.mode()=='legacy':
+                saved=session/'source'/relative;saved.parent.mkdir(parents=True,exist_ok=True)
+                shutil.copy2(file,saved)
+            fingerprints[relative]=hashlib.sha256(file.read_bytes()).hexdigest()
+        for file in sorted((source.parent/'kitchen-assets/textures').glob('*.png')):
+            relative='../kitchen-assets/textures/'+file.name
+            if diagnostics.mode()=='legacy':
+                saved=session/'source/shared-textures'/file.name;saved.parent.mkdir(parents=True,exist_ok=True)
+                shutil.copy2(file,saved)
+            fingerprints[relative]=hashlib.sha256(file.read_bytes()).hexdigest()
+        for filename in [args.point_model,'segmenter-adapted.pt','icon-classifier.pt','segmenter-positive-surfaces.pt']:
             file=source/filename
             if file.exists():
                 digest=hashlib.sha256()
@@ -356,11 +331,33 @@ def main():
         (session/'version.json').write_text(json.dumps({'version':version,'files':fingerprints,'requested_games':args.games,'capture_fps':args.fps},indent=2),encoding='utf8')
         print(f'Fixed-version batch {version}: {args.games} games. Session: {session.resolve()}',flush=True)
         print('Ready. Focus the game at its results, kitchen menu, or Order screen, then press F8. Escape exits.',flush=True)
-        desktop=Desktop(args.title);ready=False
+        if args.wait_for_focus:
+            if status_callback:status_callback('waiting_focus')
+            # Model loading needs no game window. Only an explicit start request
+            # enters this loop or creates the native game adapter.
+            while True:
+                stop_file=os.environ.get('COOKING_STOP_FILE')
+                if stop_file and Path(stop_file).exists():return
+                try:
+                    desktop=Desktop(args.title)
+                    break
+                except RuntimeError as error:
+                    if not str(error).startswith('Game window not found:'):raise
+                    time.sleep(.1)
+        else:
+            desktop=Desktop(args.title)
+        ready=False
         try:
-            if args.autostart and not desktop.should_stop() and desktop.focused():
+            if args.wait_for_focus:
+                while not desktop.should_stop():
+                    if desktop.focused():
+                        if status_callback:status_callback('running')
+                        ready=advance_to_order(desktop,model,session/'before-game-1')
+                        break
+                    time.sleep(.05)
+            elif args.autostart and not desktop.should_stop() and desktop.focused():
                 ready=advance_to_order(desktop,model,session/'before-game-1')
-            while not ready:
+            while not ready and not args.wait_for_focus:
                 if args.autostart and desktop.focused():break
                 args.autostart=False
                 if desktop.should_stop():break
@@ -372,7 +369,7 @@ def main():
         if not ready:print('Session start canceled or game was not ready.',flush=True);raise SystemExit(0)
         for game in range(args.games):
             model.recipe_cache=None
-            result=play(args,model,autostart=True);results.append(result)
+            result=play(args,model,autostart=True,status_callback=status_callback);results.append(result)
             (session/'summary.json').write_text(json.dumps({'games':results,'goal_verified':False},indent=2),encoding='utf8')
             if not result['natural_end'] or game+1>=args.games:break
             desktop=Desktop(args.title)

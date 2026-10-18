@@ -15,6 +15,14 @@ from app_settings import StartHotkey, hotkeys_conflict, captured_hotkey, parse_s
 
 
 class Controls(unittest.TestCase):
+    def test_num_and_caps_lock_bits_do_not_become_alt(self):
+        for lock in (0,0x8,0x2,0x20,0x2A,0x40008):
+            for sym,vk,key in (('F8',0x77,'F8'),('q',0x51,'Q'),('KP_1',0x61,'Num1')):
+                self.assertEqual(captured_hotkey(sym,lock,vk),key)
+                self.assertEqual(captured_hotkey(sym,lock|4,vk),'Ctrl+'+key)
+                self.assertEqual(captured_hotkey(sym,lock|0x20000,vk),'Alt+'+key)
+                self.assertEqual(captured_hotkey(sym,lock|0x20005,vk),'Ctrl+Alt+Shift+'+key)
+
     def test_count(self):
         for text in ('1', '5', '6', '1000'):
             self.assertEqual(parse_games(text), int(text))

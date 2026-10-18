@@ -93,3 +93,13 @@ class SupplementalFood:
         if not all(agreement):
             validation.update(accepted=False, reason='supplement_latest_surface_disagrees')
         return validation
+
+
+class SelectedSupplement(SupplementalFood):
+    """On-demand localization, verified by the already loaded point model."""
+    def __init__(self, baseline, locator_path):
+        self.model = copy.copy(baseline)
+        self.model.model = Segmenter().to(baseline.device).eval()
+        self.model.model.load_state_dict(torch.load(
+            locator_path, map_location=baseline.device, weights_only=True)['model'])
+        assert self.model.point_classifier is baseline.point_classifier

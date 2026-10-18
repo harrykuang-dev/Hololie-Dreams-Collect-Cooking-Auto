@@ -30,7 +30,7 @@ def choose_motion_food(options, model, old, old_stamp, latest, inventory, order,
                 continue
             validation = supplement.verify_latest(frame, tracking['observed_point'], tracking['point'], action['label'], order)
         else:
-            validation = verify_latest_click(model, frame, tracking['observed_point'], tracking['point'], action['label'], order, minimum_score=.995 if small_onion or small_shrimp or strict_clear or full_tray else .94)
+            validation = verify_latest_click(model, frame, tracking['observed_point'], tracking['point'], action['label'], order, minimum_score=max(action.get('minimum_point_score',0), .995 if small_onion or small_shrimp or strict_clear or full_tray else .94))
         attempt['validation_ms']=(time.perf_counter()-validation_started)*1000
         validation['capture_age_ms'] = round((time.monotonic()-latest_stamp)*1000)
         attempt['validation'] = validation

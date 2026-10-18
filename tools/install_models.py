@@ -10,12 +10,10 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 ALLOWED = {
     'outputs/kitchen-bot/icon-classifier.pt',
-    'outputs/kitchen-bot/point-classifier.pt',
-    'outputs/kitchen-bot/point-classifier-human-paired.pt',
-    'outputs/kitchen-bot/segmenter.pt',
     'outputs/kitchen-bot/segmenter-adapted.pt',
     'outputs/kitchen-bot/segmenter-positive-surfaces.pt',
-    'outputs/kitchen-labeler/point-classifier-human.pt',
+    'outputs/kitchen-labeler/point-classifier-resnet18.pt',
+    'outputs/kitchen-labeler/point-classifier-resnet101.pt',
 }
 
 
@@ -30,7 +28,7 @@ def install(archive, verify_only=False):
     manifest = json.loads((ROOT / 'models-manifest.json').read_text(encoding='utf-8'))
     assert set(manifest['files']) == ALLOWED, 'Unexpected manifest paths'
     with archive.open('rb') as stream:
-        if sha256(stream) != manifest['archive_sha256']:
+        if manifest.get('archive_sha256') and sha256(stream) != manifest['archive_sha256']:
             raise ValueError('Archive SHA-256 mismatch')
     with zipfile.ZipFile(archive) as z:
         entries = z.infolist()

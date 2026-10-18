@@ -1,19 +1,20 @@
 {
-  "release": "v0.2.0",
-  "runtime_version": "18f1a4a94a7c73ea",
-  "packaged_runtime_fingerprints_verified": 35,
-  "packaged_model_fingerprints_verified": 7,
-  "launcher_unit_tests": 8,
-  "existing_coordinate_and_click_guard_checks": "PASS",
-  "packaged_model_inference": {
-    "device": "cuda",
-    "real_order_frame": "PASS",
-    "real_playing_frame_order_1": "PASS"
-  },
-  "packaged_cancel_before_start": "PASS",
-  "computer_use_testing": "Not performed for final portable release, per user request",
-  "new_gameplay_benchmark": false,
-  "cpu_gameplay_speed_validated": false,
-  "frozen_gui_matches_current_source": true,
-  "complete_pyinstaller_bootstrap_verified": true
+  "release": "v1.0.0",
+  "runtime_version": "ab31ff4c557d1ec0",
+  "runtime_fingerprints_verified": 153,
+  "model_files_verified": 5,
+  "unit_tests_passed": 26,
+  "both_packaged_model_load_checks_passed": true,
+  "both_load_then_cancel_checks_passed": true,
+  "source_and_embedded_ui_match": true,
+  "six_language_equal_field_height_cases": 30,
+  "button_corner_states_checked": [
+    "normal",
+    "active",
+    "pressed",
+    "focus",
+    "disabled"
+  ],
+  "game_inputs_during_release_checks": 0,
+  "exe_sha256": "31a3ec380521737be60cbf93e9fa4e9bdce1b33617b650e9181d805ae854138a"
 }
