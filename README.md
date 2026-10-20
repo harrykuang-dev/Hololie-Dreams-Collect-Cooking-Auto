@@ -6,7 +6,7 @@ A cooking program for Collect Cooking in the Windows version of *hololive Dreams
 
 ## Download
 
-Open [GitHub Releases](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1) and download every `Collect-Cooking-Auto-v1.0.1-win64.7z.*` part into the same folder. Extract `.7z.001` with 7-Zip, then run `Collect-Cooking-Auto-v1.0.1.exe` inside the extracted folder.
+Open [GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1) and download every `Collect-Cooking-Auto-v1.0.1-win64.7z.*` part into the same folder. Extract `.7z.001` with 7-Zip, then run `Collect-Cooking-Auto-v1.0.1.exe` inside the extracted folder.
 
 Keep `_internal` beside the EXE. Python, the inference libraries and all five model checkpoints are included. `SHA256SUMS.txt` verifies the downloads; `models.zip` is for source users. GitHub's source ZIP requires installing dependencies and models separately.
 
@@ -57,7 +57,7 @@ The [planner](outputs/kitchen-bot/planner.py) retains the recipe, tray estimate,
 
 ## Bug reports and developer mode
 
-Report recognition, clicking or continuation problems through [GitHub Issues](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/issues). Enable **Developer mode** before reproducing the problem. It saves recognition results, click timing, game screenshots and performance summaries locally. Enabling it adds processing overhead; data is not uploaded automatically.
+Report recognition, clicking or continuation problems through [GitHub Issues](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/issues). Enable **Developer mode** before reproducing the problem. It saves recognition results, click timing, game screenshots and performance summaries locally. Enabling it adds processing overhead; data is not uploaded automatically.
 
 Click the adjacent `?` to view and open the diagnostics folder:
 

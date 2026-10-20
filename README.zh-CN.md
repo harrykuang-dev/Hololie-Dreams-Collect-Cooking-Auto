@@ -6,7 +6,7 @@ Windows版《hololive Dreams》拼配厨房的自动料理程序。通过游戏�
 
 ## 下载
 
-前往 [GitHub Releases](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1)，将所有 `Collect-Cooking-Auto-v1.0.1-win64.7z.*` 分卷下载到同一文件夹。用7-Zip解压 `.7z.001`，再运行解压文件夹中的 `Collect-Cooking-Auto-v1.0.1.exe`。
+前往 [GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1)，将所有 `Collect-Cooking-Auto-v1.0.1-win64.7z.*` 分卷下载到同一文件夹。用7-Zip解压 `.7z.001`，再运行解压文件夹中的 `Collect-Cooking-Auto-v1.0.1.exe`。
 
 请保留EXE旁的 `_internal` 文件夹。已包含Python、推理库及五份模型权重。`SHA256SUMS.txt`用于核对下载文件；`models.zip`供源码使用。GitHub自动生成的源码ZIP需要另外安装依赖和模型。
 
@@ -57,7 +57,7 @@ Windows版《hololive Dreams》拼配厨房的自动料理程序。通过游戏�
 
 ## 异常反馈与开发者模式
 
-识别、点击或续局异常，可在 [GitHub Issues](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/issues)提交反馈。先勾选「**开发者模式**」再重现问题，程序会在本地保存识别结果、点击时序、游戏截图及性能摘要。开启后会增加性能负担，资料不会自动上传。
+识别、点击或续局异常，可在 [GitHub Issues](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/issues)提交反馈。先勾选「**开发者模式**」再重现问题，程序会在本地保存识别结果、点击时序、游戏截图及性能摘要。开启后会增加性能负担，资料不会自动上传。
 
 点击旁边的 `?` 可查看并打开诊断文件夹：
 

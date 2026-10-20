@@ -6,7 +6,7 @@ Program memasak otomatis untuk Collect Cooking pada *hololive Dreams* versi Wind
 
 ## Unduh
 
-Buka [GitHub Releases](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1) dan unduh semua bagian `Collect-Cooking-Auto-v1.0.1-win64.7z.*` ke folder yang sama. Ekstrak `.7z.001` dengan 7-Zip, lalu jalankan `Collect-Cooking-Auto-v1.0.1.exe` di dalam folder hasil ekstraksi.
+Buka [GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1) dan unduh semua bagian `Collect-Cooking-Auto-v1.0.1-win64.7z.*` ke folder yang sama. Ekstrak `.7z.001` dengan 7-Zip, lalu jalankan `Collect-Cooking-Auto-v1.0.1.exe` di dalam folder hasil ekstraksi.
 
 Pertahankan folder `_internal` di samping EXE. Python, pustaka inferensi dan kelima model sudah disertakan. Gunakan `SHA256SUMS.txt` untuk memeriksa unduhan. `models.zip` ditujukan untuk menjalankan kode sumber. ZIP sumber dari GitHub memerlukan pemasangan dependensi dan model secara terpisah.
 
@@ -57,7 +57,7 @@ Saat jalur utama akan menunggu atau mengocok piring, [pencari tambahan](outputs/
 
 ## Laporan masalah dan mode pengembang
 
-Laporkan masalah pengenalan, klik atau kelanjutan melalui [GitHub Issues](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/issues). Aktifkan **Mode pengembang** sebelum mengulangi masalah. Hasil pengenalan, waktu klik, gambar game dan ringkasan performa disimpan secara lokal. Mode ini menambah beban pemrosesan; data tidak diunggah otomatis.
+Laporkan masalah pengenalan, klik atau kelanjutan melalui [GitHub Issues](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/issues). Aktifkan **Mode pengembang** sebelum mengulangi masalah. Hasil pengenalan, waktu klik, gambar game dan ringkasan performa disimpan secara lokal. Mode ini menambah beban pemrosesan; data tidak diunggah otomatis.
 
 Klik `?` di sebelahnya untuk melihat dan membuka folder diagnostik:
 

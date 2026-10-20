@@ -6,7 +6,7 @@ Windows版『hololive Dreams』の「そろえてクッキング」を自動操�
 
 ## ダウンロード
 
-[GitHub Releases](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1)から `Collect-Cooking-Auto-v1.0.1-win64.7z.*` の全分割ファイルを同じフォルダーにダウンロードしてください。7-Zipで `.7z.001` を展開し、フォルダー内の `Collect-Cooking-Auto-v1.0.1.exe` を実行します。
+[GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1)から `Collect-Cooking-Auto-v1.0.1-win64.7z.*` の全分割ファイルを同じフォルダーにダウンロードしてください。7-Zipで `.7z.001` を展開し、フォルダー内の `Collect-Cooking-Auto-v1.0.1.exe` を実行します。
 
 EXEの隣にある `_internal` フォルダーも必要です。Python、推論ライブラリ、5個の学習済みモデルを同梱しています。ダウンロードの確認には `SHA256SUMS.txt` を使用できます。`models.zip` はソースから実行する場合のモデルです。GitHubのソースZIPでは依存パッケージとモデルを別途導入してください。
 
@@ -57,7 +57,7 @@ Windows 10／11 x64とWindows版ゲームに対応します。ゲームの表示
 
 ## 不具合報告と開発者モード
 
-認識、クリック、続行の問題は [GitHub Issues](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/issues)に報告してください。「**開発者モード**」を有効にしてから再現すると、認識結果、入力のタイミング、ゲーム画像、処理時間の概要をローカルに保存します。有効にすると処理負荷が増えます。自動アップロードは行いません。
+認識、クリック、続行の問題は [GitHub Issues](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/issues)に報告してください。「**開発者モード**」を有効にしてから再現すると、認識結果、入力のタイミング、ゲーム画像、処理時間の概要をローカルに保存します。有効にすると処理負荷が増えます。自動アップロードは行いません。
 
 隣の `?` から診断フォルダーを確認して開けます。
 

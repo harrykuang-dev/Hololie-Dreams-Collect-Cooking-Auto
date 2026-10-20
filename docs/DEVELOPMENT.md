@@ -20,7 +20,7 @@ py -3.13 -m venv .venv
 從v1.0.1 Release下載 `models.zip`，保留原檔名與壓縮包內路徑：
 
 ```powershell
-gh release download v1.0.1 --repo harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto --pattern models.zip --dir downloads
+gh release download v1.0.1 --repo harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto --pattern models.zip --dir downloads
 .\.venv\Scripts\python.exe tools\install_models.py downloads\models.zip
 .\.venv\Scripts\python.exe tools\check_runtime.py
 ```

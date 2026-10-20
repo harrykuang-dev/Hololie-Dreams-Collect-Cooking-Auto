@@ -27,7 +27,7 @@ from ui_text import UI
 DATA = Path(os.environ.get('LOCALAPPDATA', str(Path.home()))) / 'CollectCookingAuto'
 
 TEXT = UI
-PROJECT_URL = "https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto"
+PROJECT_URL = "https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto"
 
 
 def parse_games(value):

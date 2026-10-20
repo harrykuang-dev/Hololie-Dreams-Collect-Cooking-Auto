@@ -6,7 +6,7 @@ Windows판 *hololive Dreams*의 모아 쿠킹을 자동으로 플레이하는 �
 
 ## 다운로드
 
-[GitHub Releases](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1)에서 `Collect-Cooking-Auto-v1.0.1-win64.7z.*` 분할 파일을 모두 같은 폴더에 다운로드하세요. 7-Zip으로 `.7z.001`을 압축 해제한 뒤 폴더의 `Collect-Cooking-Auto-v1.0.1.exe`를 실행하세요.
+[GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1)에서 `Collect-Cooking-Auto-v1.0.1-win64.7z.*` 분할 파일을 모두 같은 폴더에 다운로드하세요. 7-Zip으로 `.7z.001`을 압축 해제한 뒤 폴더의 `Collect-Cooking-Auto-v1.0.1.exe`를 실행하세요.
 
 EXE 옆의 `_internal` 폴더를 유지하세요. Python, 추론 라이브러리와 모델 가중치 5개가 포함되어 있습니다. `SHA256SUMS.txt`로 다운로드를 확인할 수 있으며 `models.zip`은 소스 실행용입니다. GitHub의 소스 ZIP은 의존 패키지와 모델을 별도로 설치해야 합니다.
 
@@ -57,7 +57,7 @@ Windows 10/11 x64와 Windows판 게임이 필요합니다. 게임 표시 영역�
 
 ## 문제 보고와 개발자 모드
 
-인식, 클릭이나 다음 판 진행에 문제가 있으면 [GitHub Issues](https://github.com/harrykuang-dev/Hololie-Dreams-Collect-Cooking-Auto/issues)에 보고하세요. **개발자 모드**를 켠 뒤 재현하면 인식 결과, 클릭 시점, 게임 화면과 성능 요약을 로컬에 저장합니다. 활성화하면 처리 부하가 늘어나며 자료는 자동으로 업로드되지 않습니다.
+인식, 클릭이나 다음 판 진행에 문제가 있으면 [GitHub Issues](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/issues)에 보고하세요. **개발자 모드**를 켠 뒤 재현하면 인식 결과, 클릭 시점, 게임 화면과 성능 요약을 로컬에 저장합니다. 활성화하면 처리 부하가 늘어나며 자료는 자동으로 업로드되지 않습니다.
 
 옆의 `?`에서 진단 폴더를 확인하고 열 수 있습니다.
 
