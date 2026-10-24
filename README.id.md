@@ -73,4 +73,6 @@ Mode pengembang menyimpan skor terkonfirmasi, jumlah masakan, klik, keputusan, a
 
 Panduan menjalankan sumber, membangun dan menguji tersedia di [panduan pengembangan](docs/DEVELOPMENT.md). Lihat juga [riwayat versi](docs/VERSION_HISTORY.md), [rincian model](docs/model-options.md) dan [istilah game](docs/GAME_TERMS.md).
 
+Gambar beranotasi manusia, label, pembagian dataset tetap dan panduan pelatihan ulang tersedia di [annotations](annotations/README.md).
+
 Lisensi pihak ketiga tersimpan di [third-party](third-party/README.md). Hak atas nama dan gambar game dimiliki pemegang hak masing-masing.

@@ -73,4 +73,6 @@ Developer mode permanently retains every round’s verified score, dish count, c
 
 Source startup, building and tests are in the [development guide](docs/DEVELOPMENT.md). The [version history](docs/VERSION_HISTORY.md), [model details](docs/model-options.md) and [game terminology](docs/GAME_TERMS.md) provide further reference.
 
+Human annotation images, labels, fixed dataset splits and retraining instructions are available in [annotations](annotations/README.md).
+
 Third-party notices are in [third-party](third-party/README.md). Game names and artwork belong to their respective rights holders.

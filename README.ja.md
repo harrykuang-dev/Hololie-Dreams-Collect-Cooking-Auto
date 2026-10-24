@@ -73,4 +73,6 @@ Windows 10／11 x64とWindows版ゲームに対応します。ゲームの表示
 
 ソースからの起動、ビルド、テストは [開発ガイド](docs/DEVELOPMENT.md)を参照してください。[変更履歴](docs/VERSION_HISTORY.md)、[モデルの詳細](docs/model-options.md)、[ゲーム用語](docs/GAME_TERMS.md)も用意しています。
 
+人手による注釈画像、ラベル、固定データ分割と再学習手順は [annotations](annotations/README.md) にあります。
+
 第三者のライセンスは [third-party](third-party/README.md)に保存しています。ゲーム名と画像の権利は各権利者に帰属します。

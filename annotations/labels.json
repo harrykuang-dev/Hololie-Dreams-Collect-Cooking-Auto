@@ -1,0 +1,160 @@
+{
+  "labels": [
+    {
+      "index": 0,
+      "id": "background",
+      "name_zh_TW": "背景／空白"
+    },
+    {
+      "index": 1,
+      "id": "ham",
+      "name_zh_TW": "火腿"
+    },
+    {
+      "index": 2,
+      "id": "milk",
+      "name_zh_TW": "牛奶"
+    },
+    {
+      "index": 3,
+      "id": "pot",
+      "name_zh_TW": "帶柄麵鍋"
+    },
+    {
+      "index": 4,
+      "id": "potato",
+      "name_zh_TW": "馬鈴薯"
+    },
+    {
+      "index": 5,
+      "id": "sauce",
+      "name_zh_TW": "醬汁瓶"
+    },
+    {
+      "index": 6,
+      "id": "cucumber",
+      "name_zh_TW": "小黃瓜"
+    },
+    {
+      "index": 7,
+      "id": "meat",
+      "name_zh_TW": "肉盒"
+    },
+    {
+      "index": 8,
+      "id": "udon",
+      "name_zh_TW": "白色烏龍麵"
+    },
+    {
+      "index": 9,
+      "id": "noodles",
+      "name_zh_TW": "黃色麵塊"
+    },
+    {
+      "index": 10,
+      "id": "plum",
+      "name_zh_TW": "梅子"
+    },
+    {
+      "index": 11,
+      "id": "egg",
+      "name_zh_TW": "白雞蛋"
+    },
+    {
+      "index": 12,
+      "id": "brownegg",
+      "name_zh_TW": "棕雞蛋"
+    },
+    {
+      "index": 13,
+      "id": "kamaboko",
+      "name_zh_TW": "魚板"
+    },
+    {
+      "index": 14,
+      "id": "cereal",
+      "name_zh_TW": "麥片盒"
+    },
+    {
+      "index": 15,
+      "id": "onion",
+      "name_zh_TW": "洋蔥"
+    },
+    {
+      "index": 16,
+      "id": "panko",
+      "name_zh_TW": "麵包粉"
+    },
+    {
+      "index": 17,
+      "id": "pepper",
+      "name_zh_TW": "紅辣椒"
+    },
+    {
+      "index": 18,
+      "id": "spider",
+      "name_zh_TW": "蜘蛛盒"
+    },
+    {
+      "index": 19,
+      "id": "flour",
+      "name_zh_TW": "麵粉"
+    },
+    {
+      "index": 20,
+      "id": "sausage",
+      "name_zh_TW": "香腸"
+    },
+    {
+      "index": 21,
+      "id": "ricebowl",
+      "name_zh_TW": "碗裝白飯"
+    },
+    {
+      "index": 22,
+      "id": "plate",
+      "name_zh_TW": "盤裝白飯"
+    },
+    {
+      "index": 23,
+      "id": "ricepack",
+      "name_zh_TW": "粉紅飯盒"
+    },
+    {
+      "index": 24,
+      "id": "scallion",
+      "name_zh_TW": "蔥"
+    },
+    {
+      "index": 25,
+      "id": "shrimp",
+      "name_zh_TW": "炸蝦"
+    },
+    {
+      "index": 26,
+      "id": "curry",
+      "name_zh_TW": "咖哩壺"
+    },
+    {
+      "index": 27,
+      "id": "seaweed",
+      "name_zh_TW": "海苔"
+    },
+    {
+      "index": 28,
+      "id": "glove",
+      "name_zh_TW": "手套／手掌盤"
+    },
+    {
+      "index": 29,
+      "id": "moyashi",
+      "name_zh_TW": "豆芽罐"
+    },
+    {
+      "index": 30,
+      "id": "tuna",
+      "name_zh_TW": "鮪魚罐"
+    }
+  ],
+  "uncertain": "Excluded from training; not a model output class."
+}

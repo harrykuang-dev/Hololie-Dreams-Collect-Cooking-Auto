@@ -1,0 +1,94 @@
+{
+  "passed": true,
+  "confirmed": 15627,
+  "uncertain": 4,
+  "split_counts": {
+    "development_test": 2588,
+    "train": 10434,
+    "validation": 2605
+  },
+  "unique_images": 35508,
+  "legacy_image_references": 446,
+  "image_bytes": 644889663,
+  "split_leakage": 0,
+  "training_input_checks": {
+    "exact_bgr_input_match": true,
+    "training_started": false,
+    "checks": [
+      {
+        "architecture": "resnet18",
+        "input_shape": [
+          2,
+          3,
+          96,
+          96
+        ],
+        "output_shape": [
+          2,
+          31
+        ],
+        "passed": true
+      },
+      {
+        "architecture": "resnet34",
+        "input_shape": [
+          2,
+          3,
+          96,
+          96
+        ],
+        "output_shape": [
+          2,
+          31
+        ],
+        "passed": true
+      },
+      {
+        "architecture": "resnet50",
+        "input_shape": [
+          2,
+          3,
+          96,
+          96
+        ],
+        "output_shape": [
+          2,
+          31
+        ],
+        "passed": true
+      },
+      {
+        "architecture": "resnet101",
+        "input_shape": [
+          2,
+          3,
+          96,
+          96
+        ],
+        "output_shape": [
+          2,
+          31
+        ],
+        "passed": true
+      },
+      {
+        "architecture": "resnet152",
+        "input_shape": [
+          2,
+          3,
+          96,
+          96
+        ],
+        "output_shape": [
+          2,
+          31
+        ],
+        "passed": true
+      }
+    ]
+  },
+  "local_paths_and_credentials_scan": "passed",
+  "matches_both_released_classifier_training_splits": true,
+  "unique_classification_crop_hashes": 15631,
+  "original_annotation_database_modified": false
+}

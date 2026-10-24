@@ -73,4 +73,6 @@ Windows 10/11 x64와 Windows판 게임이 필요합니다. 게임 표시 영역�
 
 소스 실행, 빌드와 테스트는 [개발 안내](docs/DEVELOPMENT.md)를 참고하세요. [버전 기록](docs/VERSION_HISTORY.md), [모델 설명](docs/model-options.md), [게임 용어](docs/GAME_TERMS.md)도 제공됩니다.
 
+사람이 검토한 이미지와 라벨, 고정 데이터 분할 및 재학습 방법은 [annotations](annotations/README.md)에 있습니다.
+
 타사 라이선스는 [third-party](third-party/README.md)에 보관됩니다. 게임 이름과 이미지의 권리는 각 권리자에게 있습니다.

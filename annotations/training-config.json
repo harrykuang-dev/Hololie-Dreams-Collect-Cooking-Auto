@@ -1,0 +1,42 @@
+{
+  "architectures": [
+    "resnet18",
+    "resnet34",
+    "resnet50",
+    "resnet101",
+    "resnet152"
+  ],
+  "seed": 20261015,
+  "batch_size": 32,
+  "learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "initialization": "torchvision ImageNet1K V1",
+  "all_layers_trainable": true,
+  "input": {
+    "canonical_size": [
+      1536,
+      864
+    ],
+    "crop_size": [
+      64,
+      64
+    ],
+    "model_input_size": [
+      96,
+      96
+    ],
+    "channel_order": "BGR",
+    "scale": "0..1",
+    "resize": "OpenCV INTER_LINEAR"
+  },
+  "selection": "validation macro recall, then fewer errors at confidence >= 0.995",
+  "original_frozen_dataset_sha256": "7240f347f273eb1212fabbb17ebb618b534ca3a685f900b2e983a1533b36e155",
+  "original_epochs_schedule": 30,
+  "continuation_policy": {
+    "minimum_epochs": 60,
+    "maximum_epochs": 200,
+    "patience_epochs": 30,
+    "smoothing_window_epochs": 3,
+    "minimum_improvement_absolute": 0.002
+  }
+}

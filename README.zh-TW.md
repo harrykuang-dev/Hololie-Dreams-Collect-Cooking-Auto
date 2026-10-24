@@ -73,4 +73,6 @@ Windows版《hololive Dreams》食材妙廚房的自動料理程式。透過遊�
 
 原始碼啟動、建置及測試見 [開發說明](docs/DEVELOPMENT.md)，其他內容見 [版本記錄](docs/VERSION_HISTORY.md)、[模型說明](docs/model-options.md)及 [遊戲用詞](docs/GAME_TERMS.md)。
 
+人工標註圖片、標籤、固定資料切分及重新訓練說明見 [annotations](annotations/README.md#繁體中文)。
+
 第三方授權保留於 [third-party](third-party/README.md)。遊戲名稱與美術素材的權利歸各自權利人所有。
