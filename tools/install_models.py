@@ -8,13 +8,10 @@ import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-ALLOWED = {
-    'outputs/kitchen-bot/icon-classifier.pt',
-    'outputs/kitchen-bot/segmenter-adapted.pt',
-    'outputs/kitchen-bot/segmenter-positive-surfaces.pt',
-    'outputs/kitchen-labeler/point-classifier-resnet18.pt',
-    'outputs/kitchen-labeler/point-classifier-resnet101.pt',
-}
+ALLOWED = {'models/inference/'+name+extension
+           for name in ('icon-classifier','segmenter-adapted','segmenter-positive-surfaces',
+                        'point-classifier-resnet18','point-classifier-resnet101')
+           for extension in ('.onnx','.json')}
 
 
 def sha256(stream):
@@ -54,13 +51,13 @@ def install(archive, verify_only=False):
                 if destination.exists():
                     continue
                 destination.parent.mkdir(parents=True, exist_ok=True)
-                temporary = destination.with_suffix('.pt.download')
+                temporary = destination.with_suffix(destination.suffix+'.download')
                 with z.open(name) as source, temporary.open('wb') as target:
                     shutil.copyfileobj(source, target)
                     target.flush()
                     os.fsync(target.fileno())
                 os.replace(temporary, destination)
-    print(('Verified' if verify_only else 'Installed') + f" {len(ALLOWED)} checkpoints for {manifest['runtime_version']}.")
+    print(('Verified' if verify_only else 'Installed') + f" {len(ALLOWED)} inference files for {manifest['runtime_version']}.")
 
 
 if __name__ == '__main__':

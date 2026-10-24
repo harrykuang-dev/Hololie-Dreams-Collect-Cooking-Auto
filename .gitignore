@@ -1,4 +1,6 @@
 .venv/
+.venv-*/
+models/inference/
 __pycache__/
 *.py[cod]
 *.pt

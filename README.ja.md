@@ -1,4 +1,4 @@
-# Hololive Dreams Auto Collect Cooking — 1.0.1
+# Hololive Dreams Auto Collect Cooking — 1.1.0
 
 [English](README.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Indonesian](README.id.md) · [简体中文](README.zh-CN.md)
 
@@ -6,7 +6,7 @@ Windows版『hololive Dreams』の「そろえてクッキング」を自動操�
 
 ## ダウンロード
 
-[GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1)から `Collect-Cooking-Auto-v1.0.1-win64.7z.*` の全分割ファイルを同じフォルダーにダウンロードしてください。7-Zipで `.7z.001` を展開し、フォルダー内の `Collect-Cooking-Auto-v1.0.1.exe` を実行します。
+[GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.1.0)から `Collect-Cooking-Auto-v1.1.0-win64.7z.*` の全分割ファイルを同じフォルダーにダウンロードしてください。7-Zipで `.7z.001` を展開し、フォルダー内の `Collect-Cooking-Auto-v1.1.0.exe` を実行します。
 
 EXEの隣にある `_internal` フォルダーも必要です。Python、推論ライブラリ、5個の学習済みモデルを同梱しています。ダウンロードの確認には `SHA256SUMS.txt` を使用できます。`models.zip` はソースから実行する場合のモデルです。GitHubのソースZIPでは依存パッケージとモデルを別途導入してください。
 
@@ -31,9 +31,9 @@ EXEの隣にある `_internal` フォルダーも必要です。Python、推論�
 
 ## 動作条件と制限
 
-Windows 10／11 x64とWindows版ゲームに対応します。ゲームの表示領域は16:9にし、ディスプレイをオンにして画面を表示したまま使用してください。利用可能なNVIDIA CUDAを自動選択し、それ以外ではCPUで推論します。リソースに余裕がない場合は標準モデルを選んでください。
+Windows 10／11 x64とWindows版ゲームに対応します。ゲームの表示領域を16:9にし、ディスプレイをオンにして画面を表示してください。単一の完全版に全推論ライブラリと共通のFP32 ONNXモデルを同梱します。対応するNVIDIA GPUではTensorRT、その他の対応DirectX 12 GPUではDirectMLを自動使用し、最後にCPUへ切り替えます。CPUや低性能GPUではクリックの時間制限を満たせない場合があります。
 
-展開後のフォルダーは約5.3 GBです。ダウンロードと展開用の空き容量も必要です。完了回数は実行の進捗を表します。料理数とスコアはゲームのリザルト画面で確認してください。食材の移動、遮蔽、パソコンの性能、ゲーム更新が認識に影響します。
+展開後のフォルダーは約2.9 GBです。ダウンロードと展開用の空き容量も必要です。完了回数は実行の進捗を表します。料理数とスコアはゲームのリザルト画面で確認してください。食材の移動、遮蔽、パソコンの性能、ゲーム更新が認識に影響します。
 
 ## 技術的な仕組み
 
@@ -66,6 +66,8 @@ Windows 10／11 x64とWindows版ゲームに対応します。ゲームの表示
 ```
 
 実行終了時に日時付きのZIPを作成します。バージョン、選択したモデル、ゲーム言語、解像度、Windowsの表示倍率、問題の説明、診断ZIPを添付してください。
+
+開発者モードでは各回の確認済みスコア、料理数、クリック、判断、待機理由と処理時間をJSONLへ永続保存します。リザルト画像と通常画像は共通の容量制限で古い順に削除し、残っている画像は `image-index.json` で確認できます。確認できない数値はnullとして理由を残します。診断ZIPは1ファイル20 MBを上限とし、テキストだけで超える場合は複数のZIPに分割します。元の完全なテキストファイルはローカルに保存します。
 
 ## ソースと権利表記
 

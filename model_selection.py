@@ -3,8 +3,8 @@ from pathlib import Path
 
 DEFAULT_MODEL = 'resnet18'
 MODEL_FILES = {
-    'resnet18': 'outputs/kitchen-labeler/point-classifier-resnet18.pt',
-    'resnet101': 'outputs/kitchen-labeler/point-classifier-resnet101.pt',
+    'resnet18': 'models/inference/point-classifier-resnet18.onnx',
+    'resnet101': 'models/inference/point-classifier-resnet101.onnx',
 }
 
 

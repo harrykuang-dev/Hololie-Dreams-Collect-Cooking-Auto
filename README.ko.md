@@ -1,4 +1,4 @@
-# Hololive Dreams Auto Collect Cooking — 1.0.1
+# Hololive Dreams Auto Collect Cooking — 1.1.0
 
 [English](README.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Indonesian](README.id.md) · [简体中文](README.zh-CN.md)
 
@@ -6,7 +6,7 @@ Windows판 *hololive Dreams*의 모아 쿠킹을 자동으로 플레이하는 �
 
 ## 다운로드
 
-[GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1)에서 `Collect-Cooking-Auto-v1.0.1-win64.7z.*` 분할 파일을 모두 같은 폴더에 다운로드하세요. 7-Zip으로 `.7z.001`을 압축 해제한 뒤 폴더의 `Collect-Cooking-Auto-v1.0.1.exe`를 실행하세요.
+[GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.1.0)에서 `Collect-Cooking-Auto-v1.1.0-win64.7z.*` 분할 파일을 모두 같은 폴더에 다운로드하세요. 7-Zip으로 `.7z.001`을 압축 해제한 뒤 폴더의 `Collect-Cooking-Auto-v1.1.0.exe`를 실행하세요.
 
 EXE 옆의 `_internal` 폴더를 유지하세요. Python, 추론 라이브러리와 모델 가중치 5개가 포함되어 있습니다. `SHA256SUMS.txt`로 다운로드를 확인할 수 있으며 `models.zip`은 소스 실행용입니다. GitHub의 소스 ZIP은 의존 패키지와 모델을 별도로 설치해야 합니다.
 
@@ -31,9 +31,9 @@ EXE 옆의 `_internal` 폴더를 유지하세요. Python, 추론 라이브러리
 
 ## 실행 조건과 제한
 
-Windows 10/11 x64와 Windows판 게임이 필요합니다. 게임 표시 영역을 16:9로 유지하고 모니터를 켠 상태에서 게임 화면을 표시하세요. 사용 가능한 NVIDIA CUDA를 자동으로 선택하며, 그렇지 않으면 CPU로 추론합니다. 자원이 부족한 컴퓨터에서는 표준 모델을 우선 선택하세요.
+Windows 10/11 x64와 Windows판 게임이 필요합니다. 게임 표시 영역을 16:9로 유지하고 모니터를 켠 상태에서 게임을 표시하세요. 단일 완전판에 모든 추론 라이브러리와 공용 FP32 ONNX 모델 한 세트를 포함합니다. 호환 NVIDIA GPU는 TensorRT를, 다른 지원 DirectX 12 GPU는 DirectML을 자동 사용하며 마지막으로 CPU로 전환합니다. CPU나 성능이 낮은 GPU는 클릭 시간 조건을 충족하지 못할 수 있습니다.
 
-압축 해제한 폴더는 약 5.3 GB이며 다운로드와 압축 해제를 위한 여유 공간도 필요합니다. 완료 판수는 실행 진행 상황입니다. 요리 수와 점수는 게임 결과 화면에서 확인하세요. 식재료 이동, 가림, 컴퓨터 성능과 게임 업데이트가 인식에 영향을 줄 수 있습니다.
+압축 해제한 폴더는 약 2.9 GB이며 다운로드와 압축 해제를 위한 여유 공간도 필요합니다. 완료 판수는 실행 진행 상황입니다. 요리 수와 점수는 게임 결과 화면에서 확인하세요. 식재료 이동, 가림, 컴퓨터 성능과 게임 업데이트가 인식에 영향을 줄 수 있습니다.
 
 ## 기술 구현
 
@@ -66,6 +66,8 @@ Windows 10/11 x64와 Windows판 게임이 필요합니다. 게임 표시 영역�
 ```
 
 실행이 끝나면 날짜와 시간이 포함된 ZIP을 만듭니다. 프로그램 버전, 선택 모델, 게임 언어, 해상도, Windows 배율, 문제 설명과 진단 ZIP을 함께 제공하세요.
+
+개발자 모드는 각 판의 확인된 점수, 요리 수, 클릭, 판단, 대기 이유와 처리 시간을 JSONL로 계속 보존합니다. 결과 화면과 일반 이미지는 같은 용량 제한에 따라 오래된 순서로 삭제하며, 남아 있는 이미지는 `image-index.json`에 기록합니다. 확인하지 못한 숫자는 null로 표시하고 이유를 남깁니다. 진단 ZIP은 파일당 최대 20 MB이며 텍스트만으로 초과하면 여러 ZIP으로 분할합니다. 전체 원본 텍스트 파일은 로컬에 보존합니다.
 
 ## 소스와 권리 안내
 

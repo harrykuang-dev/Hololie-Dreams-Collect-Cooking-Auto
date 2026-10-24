@@ -1,12 +1,13 @@
 from pathlib import Path
-import cv2,numpy as np,torch
-from torch import nn
-from torchvision.models import resnet18,resnet34,resnet50,resnet101,resnet152
+import cv2,numpy as np
+from inference_backend import InferenceRuntime, ModelSession
 
 class IconClassifier:
-    def __init__(self,device='cuda',filename='icon-classifier.pt'):
-        checkpoint=torch.load(Path(__file__).parent/filename,map_location=device,weights_only=True)
-        self.labels=checkpoint['labels'];self.device=device
+    def __init__(self,device=None,filename='icon-classifier.onnx'):
+        runtime=device if isinstance(device,InferenceRuntime) else InferenceRuntime('cpu' if device=='cpu' else None)
+        self.session=ModelSession(filename,runtime)
+        checkpoint=self.session.metadata
+        self.labels=checkpoint['labels']
         self.input_spec=checkpoint.get('input',{})
         self.dataset_sha256=checkpoint.get('dataset_sha256')
         # Model role comes from training metadata, never from a filename.
@@ -14,13 +15,13 @@ class IconClassifier:
         architecture=checkpoint.get('architecture','resnet18')
         if architecture not in ('resnet18','resnet34','resnet50','resnet101','resnet152'):raise ValueError('Unsupported classifier architecture: '+architecture)
         self.architecture=architecture
-        self.model={'resnet18':resnet18,'resnet34':resnet34,'resnet50':resnet50,'resnet101':resnet101,'resnet152':resnet152}[architecture](weights=None)
-        self.model.fc=nn.Linear(self.model.fc.in_features,len(self.labels));self.model.to(device).eval()
-        self.model.load_state_dict(checkpoint['model'])
+        self.parameters=checkpoint['parameters']
+    @property
+    def device(self):return self.session.device
     def classify(self,crops):
+        if not crops:return []
         array=np.stack([cv2.resize(im,(96,96)).transpose(2,0,1) for im in crops])
-        tensor=torch.from_numpy(array.copy()).float().to(self.device)/255
-        with torch.inference_mode():probs=self.model(tensor).softmax(1).cpu().numpy()
+        probs=self.session.infer(array.astype(np.float32)/255)
         out=[]
         for row in probs:
             indices=np.argsort(-row)[:3]

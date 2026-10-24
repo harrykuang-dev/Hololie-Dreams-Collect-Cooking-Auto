@@ -1,0 +1,4 @@
+# Training/export tools are separate from the player runtime.
+torch==2.8.0
+torchvision==0.23.0
+onnx==1.19.1

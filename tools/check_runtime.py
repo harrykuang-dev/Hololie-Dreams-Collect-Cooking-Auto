@@ -33,7 +33,7 @@ def main():
         path = ROOT / name
         if not path.is_file() or path.stat().st_size != expected['bytes'] or digest(path) != expected['sha256']:
             raise SystemExit('Checkpoint fingerprint differs: ' + name)
-    print(f"PASS: runtime {version}; all {len(actual)} published fingerprints and {len(models['files'])} model files match.")
+    print(f"PASS: runtime {version}; all {len(actual)} runtime fingerprints and {len(models['files'])} inference files match.")
 
 
 if __name__ == '__main__':

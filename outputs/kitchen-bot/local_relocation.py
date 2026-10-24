@@ -1,6 +1,6 @@
 """Offline prototype: rerun the original segmenter on a same-scale local ROI."""
 import cv2,numpy as np
-from segmenter import LABELS
+from model_labels import LABELS
 
 def detect_local(model,canonical,top,scale,native_point,expected_label):
     board=canonical[175:735,318:1215];small=cv2.resize(board,(448,280))
@@ -9,8 +9,11 @@ def detect_local(model,canonical,top,scale,native_point,expected_label):
     if not(0<=px<448 and 0<=py<280):return []
     # Align pooling boundaries; retain exactly the full-board input scale.
     x0=int(max(0,min(288,8*round((px-80)/8))));y0=int(max(0,min(120,8*round((py-80)/8))))
-    patch=small[y0:y0+160,x0:x0+160];probs=model.predict(patch)
-    cls=LABELS.index(expected_label);labels=probs.argmax(0);confidence=probs.max(0)
+    patch=small[y0:y0+160,x0:x0+160]
+    if hasattr(model,'surface'):labels,confidence=model.surface(patch)
+    else:
+        probs=model.predict(patch);labels=probs.argmax(0);confidence=probs.max(0)
+    cls=LABELS.index(expected_label)
     mask=((labels==cls)&(confidence>.65)).astype(np.uint8)
     n,components,stats,_=cv2.connectedComponentsWithStats(mask,8);out=[]
     for i in range(1,n):

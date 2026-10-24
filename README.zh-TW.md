@@ -1,4 +1,4 @@
-# Hololive Dreams Auto Collect Cooking — 1.0.1
+# Hololive Dreams Auto Collect Cooking — 1.1.0
 
 [English](README.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Indonesian](README.id.md) · [简体中文](README.zh-CN.md)
 
@@ -6,7 +6,7 @@ Windows版《hololive Dreams》食材妙廚房的自動料理程式。透過遊�
 
 ## 下載
 
-前往 [GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1)，將所有 `Collect-Cooking-Auto-v1.0.1-win64.7z.*` 分卷下載至同一資料夾。用7-Zip解壓 `.7z.001`，再執行解壓資料夾中的 `Collect-Cooking-Auto-v1.0.1.exe`。
+前往 [GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.1.0)，將所有 `Collect-Cooking-Auto-v1.1.0-win64.7z.*` 分卷下載至同一資料夾。用7-Zip解壓 `.7z.001`，再執行解壓資料夾中的 `Collect-Cooking-Auto-v1.1.0.exe`。
 
 請保留EXE旁的 `_internal` 資料夾。已包含Python、推論函式庫及五份模型權重。`SHA256SUMS.txt`用於核對下載檔案；`models.zip`供原始碼使用。GitHub自動產生的原始碼ZIP需另外安裝依賴與模型。
 
@@ -31,9 +31,9 @@ Windows版《hololive Dreams》食材妙廚房的自動料理程式。透過遊�
 
 ## 使用條件與限制
 
-適用於Windows 10／11 x64及Windows版遊戲。遊戲客戶區需維持16:9，執行時保持螢幕開啟及遊戲畫面可見。偵測到可用的NVIDIA CUDA時自動使用GPU，否則使用CPU；資源較有限的電腦可優先選標準模型。
+適用於Windows 10／11 x64及Windows版遊戲。遊戲客戶區需維持16:9，保持螢幕開啟及遊戲可見。單一完整版包含全部推論函式庫及一份共用FP32 ONNX模型。相容NVIDIA GPU自動使用TensorRT，其他支援的DirectX 12 GPU使用DirectML，最後回退CPU。CPU或效能較低的GPU可能無法通過點擊時效檢查。
 
-解壓後的可攜資料夾約5.3 GB，另需預留下載分卷及解壓空間。介面中的已完成局數表示批次進度，料理數與成績以遊戲結算畫面為準。食材移動、遮擋、電腦效能及遊戲更新都可能影響辨識。
+解壓後的可攜資料夾約2.9 GB，另需預留下載分卷及解壓空間。介面中的已完成局數表示批次進度，料理數與成績以遊戲結算畫面為準。食材移動、遮擋、電腦效能及遊戲更新都可能影響辨識。
 
 ## 技術實作
 
@@ -66,6 +66,8 @@ Windows版《hololive Dreams》食材妙廚房的自動料理程式。透過遊�
 ```
 
 每次執行結束後會產生以日期時間命名的ZIP。回報時請提供程式版本、所選模型、遊戲語言、解析度、Windows顯示縮放、問題描述及診斷ZIP。
+
+開發者模式以JSONL永久保留每局確認後的分數、完成料理數、點擊、決策、等待原因及耗時。結算截圖與一般截圖共同按容量淘汰較早圖片；圖片是否仍保留以 `image-index.json` 為準。無法確認的結算數字標為null並保留原因。每個診斷ZIP硬上限20 MB；若純文字也超限，會分成多個ZIP，完整文字原檔仍保留於本機。
 
 ## 原始碼與授權說明
 

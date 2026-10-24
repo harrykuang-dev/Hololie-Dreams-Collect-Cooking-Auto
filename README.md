@@ -1,4 +1,4 @@
-# Hololive Dreams Auto Collect Cooking — 1.0.1
+# Hololive Dreams Auto Collect Cooking — 1.1.0
 
 [English](README.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Indonesian](README.id.md) · [简体中文](README.zh-CN.md)
 
@@ -6,7 +6,7 @@ A cooking program for Collect Cooking in the Windows version of *hololive Dreams
 
 ## Download
 
-Open [GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1) and download every `Collect-Cooking-Auto-v1.0.1-win64.7z.*` part into the same folder. Extract `.7z.001` with 7-Zip, then run `Collect-Cooking-Auto-v1.0.1.exe` inside the extracted folder.
+Open [GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.1.0) and download every `Collect-Cooking-Auto-v1.1.0-win64.7z.*` part into the same folder. Extract `.7z.001` with 7-Zip, then run `Collect-Cooking-Auto-v1.1.0.exe` inside the extracted folder.
 
 Keep `_internal` beside the EXE. Python, the inference libraries and all five model checkpoints are included. `SHA256SUMS.txt` verifies the downloads; `models.zip` is for source users. GitHub's source ZIP requires installing dependencies and models separately.
 
@@ -31,9 +31,9 @@ Click a shortcut field, then press the desired key or Ctrl/Alt/Shift combination
 
 ## Requirements and limitations
 
-Requires Windows 10/11 x64 and the Windows game client. Use a 16:9 client area; keep the display on and the game visible during operation. Available NVIDIA CUDA acceleration is selected automatically, with CPU inference otherwise. Standard is the lighter option for computers with limited resources.
+Requires Windows 10/11 x64 and the Windows game client. Use a 16:9 client area; keep the display on and the game visible. One complete package includes all inference libraries and one shared set of FP32 ONNX models. Compatible NVIDIA GPUs automatically use TensorRT; other supported DirectX 12 GPUs use DirectML, with CPU as the final fallback. CPU or low-performance GPUs may not meet the click timing requirements.
 
-The extracted portable folder uses about 5.3 GB; allow additional space for the downloaded archive and extraction. The completed-game counter shows batch progress. Read dish counts and scores from the game's result screen. Motion, occlusion, computer performance and game updates can affect recognition.
+The extracted portable folder uses about 2.9 GB; allow additional space for the downloaded archive and extraction. The completed-game counter shows batch progress. Read dish counts and scores from the game's result screen. Motion, occlusion, computer performance and game updates can affect recognition.
 
 ## Technical implementation
 
@@ -66,6 +66,8 @@ Click the adjacent `?` to view and open the diagnostics folder:
 ```
 
 A dated ZIP is created when the run ends. Include the program version, selected model, game language, resolution, Windows display scaling, problem description and diagnostic ZIP.
+
+Developer mode permanently retains every round’s verified score, dish count, click events, decisions, wait reasons and timings in JSONL files. Result screenshots and ordinary screenshots share oldest-first capacity eviction; `image-index.json` lists retained images. Unconfirmed result numbers remain null with an explanation. Each diagnostic ZIP has a hard limit of 20 MB. Text-only overflow is split into multiple ZIPs, while complete original text files remain on disk.
 
 ## Source and notices
 

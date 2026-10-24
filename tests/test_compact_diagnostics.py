@@ -1,8 +1,9 @@
-"""Exercise bounded issue bundles, error recovery and disabled collection."""
+"""Exercise complete durable logs, bounded media and disabled collection."""
 import json
 import os
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -31,7 +32,7 @@ class CompactDiagnostics(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder,patch.dict(os.environ,{'COOKING_DIAGNOSTICS':'compact'}):
             root=Path(folder);store=diagnostics.Store(root,{'test':True})
             diagnostics._active=store
-            # More text and image bytes than either ring can retain.
+            # More text than the old ring retained; only images may be evicted.
             for i in range(1600):
                 store.log(root/'runs/standalone-1/decisions.jsonl',json.dumps({
                     'action':{'kind':'food','label':'onion'},'analysis_ms':20,
@@ -48,19 +49,119 @@ class CompactDiagnostics(unittest.TestCase):
             output=store.finish('test failure at C:\\Users\\ExampleName\\app.py')
             self.assertLessEqual(output.stat().st_size,diagnostics.MAX_ARCHIVE_BYTES)
             self.assertLessEqual(store.image_size,diagnostics.IMAGE_BYTES)
-            self.assertLessEqual(store.trace_size,diagnostics.TRACE_BYTES)
+            self.assertGreater(store.trace_size,4_000_000)
             with zipfile.ZipFile(output) as archive:
                 names=archive.namelist()
                 self.assertNotIn('secret.pt',names);self.assertNotIn('settings.json',names)
                 meta=json.loads(archive.read('diagnostic.json'))
                 self.assertEqual(meta['actions']['food'],1600)
-                self.assertTrue(meta['dropped']['old_trace_lines'])
+                self.assertNotIn('old_trace_lines',meta['dropped'])
                 self.assertTrue(meta['dropped']['old_images'])
                 self.assertIn('runs/final.jpg',json.loads(archive.read('image-index.json')))
                 text=archive.read('trace.jsonl').decode()
+                self.assertEqual(len(text.splitlines()),1600)
+                self.assertEqual(archive.read('trace.jsonl'),(root/'trace.jsonl').read_bytes())
                 self.assertNotIn(str(root),text);self.assertNotIn('ExampleName',text)
                 self.assertNotIn('ExampleName',archive.read('diagnostic.json').decode())
                 self.assertTrue(archive.testzip() is None)
+
+    def test_ten_games_keep_every_event_and_large_decision_on_disk_and_in_zip(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);store=diagnostics.Store(root)
+            for game in range(10):
+                for click in range(120):
+                    store.log(root/f'runs/game-{game}/inputs.jsonl',json.dumps({
+                        'click':click,'detail':'x'*1024}))
+                store.log(root/f'runs/game-{game}/decisions.jsonl',json.dumps({
+                    'decision':game,'detail':'x'*110_000}))
+            store.log(root/'transitions.jsonl','\n'+json.dumps({'transition':'last'}))
+            store.log(root/'decisions.jsonl','unstructured detail '+'x'*12_000)
+            self.assertGreater(store.event_size,1_000_000)
+            # Visible to a separate reader before finish, not just an in-memory ring.
+            self.assertEqual(len((root/'inputs.jsonl').read_bytes().splitlines()),1201)
+            output=store.finish()
+            with zipfile.ZipFile(output) as archive:
+                for name,count in (('trace.jsonl',11),('inputs.jsonl',1201)):
+                    self.assertEqual(archive.read(name),(root/name).read_bytes())
+                    rows=[json.loads(line) for line in archive.read(name).splitlines()]
+                    self.assertEqual(len(rows),count)
+                self.assertEqual(rows[0]['stream'],'runs/game-0/inputs.jsonl')
+                self.assertEqual(rows[-2]['stream'],'runs/game-9/inputs.jsonl')
+                self.assertEqual(rows[-1]['data']['transition'],'last')
+
+    def test_process_exit_before_packaging_keeps_all_written_records(self):
+        with tempfile.TemporaryDirectory() as folder:
+            script=("import os,sys;from pathlib import Path;"
+                    f"sys.path.insert(0,{str(ROOT/'outputs/kitchen-bot')!r});"
+                    "import diagnostic_store as d;root=Path(sys.argv[1]);s=d.Store(root);"
+                    "s.log(root/'inputs.jsonl','{\"click\":1}');"
+                    "s.log(root/'decisions.jsonl','{\"decision\":1}');os._exit(0)")
+            subprocess.run([sys.executable,'-c',script,folder],check=True,timeout=20)
+            root=Path(folder)
+            self.assertEqual(json.loads((root/'inputs.jsonl').read_bytes())['data']['click'],1)
+            self.assertEqual(json.loads((root/'trace.jsonl').read_bytes())['data']['decision'],1)
+            self.assertFalse(list(root.glob('*.zip')))
+
+    def test_log_only_overflow_splits_valid_archives_without_losing_records(self):
+        with tempfile.TemporaryDirectory() as folder,patch.object(diagnostics,'MAX_ARCHIVE_BYTES',4096):
+            root=Path(folder);store=diagnostics.Store(root)
+            store.log(root/'decisions.jsonl',json.dumps({'data':os.urandom(20_000).hex()}))
+            output=store.finish()
+            self.assertGreater(len(store.archives),1)
+            pieces={}
+            for path in store.archives:
+                self.assertLessEqual(path.stat().st_size,4096)
+                with zipfile.ZipFile(path) as archive:
+                    self.assertIsNone(archive.testzip())
+                    for name in archive.namelist():pieces[name]=archive.read(name)
+            restored=b''.join(pieces[name] for name in sorted(pieces) if name.startswith('trace.jsonl.parts/'))
+            self.assertEqual(restored,(root/'trace.jsonl').read_bytes())
+            self.assertEqual(json.loads(pieces['diagnostic.json'])['archive_hard_limit_bytes'],4096)
+
+    def test_archive_budget_removes_oldest_screenshots_before_any_logs(self):
+        with tempfile.TemporaryDirectory() as folder,patch.object(diagnostics,'MAX_ARCHIVE_BYTES',20_000):
+            root=Path(folder);store=diagnostics.Store(root)
+            store.log(root/'inputs.jsonl','{"click":1}')
+            store.images['old']=(os.urandom(14_000),{'priority':2})
+            store.images['new']=(os.urandom(14_000),{'priority':0})
+            output=store.finish()
+            self.assertLessEqual(output.stat().st_size,20_000)
+            with zipfile.ZipFile(output) as archive:
+                index=json.loads(archive.read('image-index.json'))
+                self.assertNotIn('old',index);self.assertIn('new',index)
+                self.assertNotIn('screenshots/old.jpg',archive.namelist())
+                self.assertIn('screenshots/new.jpg',archive.namelist())
+                self.assertEqual(archive.read('inputs.jsonl'),(root/'inputs.jsonl').read_bytes())
+
+    def test_real_twenty_mb_limit_keeps_incompressible_text_in_bounded_volumes(self):
+        import hashlib
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);store=diagnostics.Store(root)
+            # One unusually large record also exercises byte splitting across a
+            # JSON line. Hex-encoded random bytes compress to over 20 MB.
+            store.log(root/'decisions.jsonl',json.dumps({'detail':os.urandom(19_000_000).hex()}))
+            expected=hashlib.sha256((root/'trace.jsonl').read_bytes()).digest()
+            store.finish()
+            self.assertGreater(len(store.archives),1)
+            restored=hashlib.sha256()
+            for path in store.archives:
+                self.assertLessEqual(path.stat().st_size,20_000_000)
+                with zipfile.ZipFile(path) as archive:
+                    self.assertIsNone(archive.testzip())
+                    for name in archive.namelist():
+                        if name.startswith('trace.jsonl.parts/'):
+                            restored.update(archive.read(name))
+            self.assertEqual(restored.digest(),expected)
+
+    def test_image_memory_limit_evicts_oldest_regardless_of_priority(self):
+        with tempfile.TemporaryDirectory() as folder,patch.object(diagnostics,'IMAGE_BYTES',1000):
+            root=Path(folder);store=diagnostics.Store(root)
+            store.images['old']=(b'x'*1000,{'priority':2});store.image_size=1000
+            store.media_order['old']=0
+            store.offer_frame(root/'new-diagnostic.png',np.zeros((32,32,3),np.uint8))
+            store.jobs.join();store.finish()
+            self.assertNotIn('old',store.images)
+            self.assertIn('new-diagnostic.png',store.images)
 
     def test_model_load_failure_still_produces_issue_bundle_without_game_input(self):
         with tempfile.TemporaryDirectory() as folder:

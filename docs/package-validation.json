@@ -1,23 +1,269 @@
 {
-  "release": "v1.0.1",
-  "runtime_version": "1788474ecc76cfb8",
-  "runtime_fingerprints_verified": 154,
-  "model_files_verified": 5,
-  "unit_tests_passed": 36,
-  "both_packaged_model_load_checks_passed": true,
-  "both_load_then_cancel_checks_passed": true,
-  "source_and_embedded_modules_match": [
-    "gui",
-    "game_window",
-    "standalone",
-    "fluent_theme",
-    "ui_text",
-    "model_selection",
-    "global_hotkey"
+  "build": "complete-shared-fp32-runtime",
+  "frontend_version": "1.1.0",
+  "runtime_version": "e059fd107499d2d3",
+  "exe_sha256": "00345c82009b0ee386bef203e2c9431c7098bd56bf911f0aebe5bcb0651177dd",
+  "unit_tests_passed": 70,
+  "packaged_checks": [
+    {
+      "model": "resnet18",
+      "requested_backend": "auto",
+      "device": null,
+      "actual": {
+        "backend": "tensorrt",
+        "requested_backend": "auto",
+        "precision": "fp32",
+        "gpu": {
+          "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU",
+          "compute": "8.9",
+          "driver_api": 13040,
+          "device": 0
+        },
+        "tensorrt": "10.13.3.9.post1",
+        "fallback_reason": null
+      },
+      "passed": true,
+      "torch_imported": false,
+      "game_inputs_sent": 0
+    },
+    {
+      "model": "resnet101",
+      "requested_backend": "auto",
+      "device": null,
+      "actual": {
+        "backend": "tensorrt",
+        "requested_backend": "auto",
+        "precision": "fp32",
+        "gpu": {
+          "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU",
+          "compute": "8.9",
+          "driver_api": 13040,
+          "device": 0
+        },
+        "tensorrt": "10.13.3.9.post1",
+        "fallback_reason": null
+      },
+      "passed": true,
+      "torch_imported": false,
+      "game_inputs_sent": 0
+    },
+    {
+      "model": "resnet18",
+      "requested_backend": "directml",
+      "device": "1",
+      "actual": {
+        "backend": "directml",
+        "requested_backend": "directml",
+        "precision": "fp32",
+        "gpu": {
+          "device": 1,
+          "gpu": "AMD Radeon 780M Graphics",
+          "vendor_id": 4098,
+          "dedicated_video_bytes": 429719552,
+          "api": "DirectX 12"
+        },
+        "tensorrt": null,
+        "fallback_reason": null
+      },
+      "passed": true,
+      "torch_imported": false,
+      "game_inputs_sent": 0
+    },
+    {
+      "model": "resnet101",
+      "requested_backend": "directml",
+      "device": "1",
+      "actual": {
+        "backend": "directml",
+        "requested_backend": "directml",
+        "precision": "fp32",
+        "gpu": {
+          "device": 1,
+          "gpu": "AMD Radeon 780M Graphics",
+          "vendor_id": 4098,
+          "dedicated_video_bytes": 429719552,
+          "api": "DirectX 12"
+        },
+        "tensorrt": null,
+        "fallback_reason": null
+      },
+      "passed": true,
+      "torch_imported": false,
+      "game_inputs_sent": 0
+    },
+    {
+      "model": "resnet18",
+      "requested_backend": "directml",
+      "device": "0",
+      "actual": {
+        "backend": "directml",
+        "requested_backend": "directml",
+        "precision": "fp32",
+        "gpu": {
+          "device": 0,
+          "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU",
+          "vendor_id": 4318,
+          "dedicated_video_bytes": 8334082048,
+          "api": "DirectX 12"
+        },
+        "tensorrt": null,
+        "fallback_reason": null
+      },
+      "passed": true,
+      "torch_imported": false,
+      "game_inputs_sent": 0
+    },
+    {
+      "model": "resnet101",
+      "requested_backend": "directml",
+      "device": "0",
+      "actual": {
+        "backend": "directml",
+        "requested_backend": "directml",
+        "precision": "fp32",
+        "gpu": {
+          "device": 0,
+          "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU",
+          "vendor_id": 4318,
+          "dedicated_video_bytes": 8334082048,
+          "api": "DirectX 12"
+        },
+        "tensorrt": null,
+        "fallback_reason": null
+      },
+      "passed": true,
+      "torch_imported": false,
+      "game_inputs_sent": 0
+    },
+    {
+      "model": "resnet18",
+      "requested_backend": "cpu",
+      "device": null,
+      "actual": {
+        "backend": "cpu",
+        "requested_backend": "cpu",
+        "precision": "fp32",
+        "gpu": null,
+        "tensorrt": null,
+        "fallback_reason": null
+      },
+      "passed": true,
+      "torch_imported": false,
+      "game_inputs_sent": 0
+    },
+    {
+      "model": "resnet101",
+      "requested_backend": "cpu",
+      "device": null,
+      "actual": {
+        "backend": "cpu",
+        "requested_backend": "cpu",
+        "precision": "fp32",
+        "gpu": null,
+        "tensorrt": null,
+        "fallback_reason": null
+      },
+      "passed": true,
+      "torch_imported": false,
+      "game_inputs_sent": 0
+    },
+    {
+      "test": "packaged-result-reading-and-hard-cap",
+      "score": 9280,
+      "passed": true,
+      "game_inputs_sent": 0
+    },
+    {
+      "test": "packaged-result-reading-and-hard-cap",
+      "score": 9600,
+      "passed": true,
+      "game_inputs_sent": 0
+    }
   ],
-  "start_requests_focus_before_worker_release_test_passed": true,
-  "minimized_restore_wait_test_passed": true,
-  "denied_activation_wait_test_passed": true,
-  "game_inputs_during_release_checks": 0,
-  "exe_sha256": "c46b3ee8fea4124c01823e99f87b996182b5096a9f8d87fee64343bb818a998a"
+  "semantic_checks": {
+    "amd-fixed": {
+      "resnet18": {
+        "matching_human_crop_predictions": 2588,
+        "human_correct": 2471,
+        "matching_actions_and_points": 88,
+        "matching_state_identities": 88,
+        "threshold_changes": 0
+      },
+      "resnet101": {
+        "matching_human_crop_predictions": 2588,
+        "human_correct": 2510,
+        "matching_actions_and_points": 88,
+        "matching_state_identities": 88,
+        "threshold_changes": 0
+      }
+    },
+    "nvidia-directml-fixed": {
+      "resnet18": {
+        "matching_human_crop_predictions": 2588,
+        "human_correct": 2471,
+        "matching_actions_and_points": 88,
+        "matching_state_identities": 88,
+        "threshold_changes": 0
+      },
+      "resnet101": {
+        "matching_human_crop_predictions": 2588,
+        "human_correct": 2510,
+        "matching_actions_and_points": 88,
+        "matching_state_identities": 88,
+        "threshold_changes": 0
+      }
+    },
+    "nvidia-tensorrt": {
+      "resnet18": {
+        "matching_human_crop_predictions": 2588,
+        "human_correct": 2471,
+        "matching_actions_and_points": 88,
+        "matching_state_identities": 88,
+        "threshold_changes": 0
+      },
+      "resnet101": {
+        "matching_human_crop_predictions": 2588,
+        "human_correct": 2510,
+        "matching_actions_and_points": 88,
+        "matching_state_identities": 88,
+        "threshold_changes": 0
+      }
+    }
+  },
+  "all_backends_bundled": true,
+  "shared_onnx_model_files": 5,
+  "model_copies": 1,
+  "requires_pytorch": false,
+  "frontend_unchanged": true,
+  "planning_motion_capture_unchanged": true,
+  "fp32_only": true,
+  "diagnostics": {
+    "events": "permanent",
+    "decisions": "permanent",
+    "round_results": "permanent",
+    "final_screenshots": "capacity-limited; oldest first; shared media budget",
+    "only_ordinary_screenshots_rotate": false,
+    "archive_target_bytes": 20000000,
+    "mandatory_data_can_exceed_target": false,
+    "twenty_round_oversize_test_passed": true,
+    "held_out_result_screens": 6,
+    "jpeg_conditions_per_screen": 3,
+    "uncertain_results": "explicit null and reason; screenshots subject to capacity eviction",
+    "archive_hard_limit_bytes": 20000000,
+    "text_overflow": "multiple independent ZIP files; complete raw text retained"
+  },
+  "floating_probabilities_bitwise_identical": false,
+  "live_game_acceptance_completed": false,
+  "game_inputs_during_checks": 0,
+  "diagnostic_hard_cap_verification": {
+    "passed": true,
+    "unit_tests_passed": 70,
+    "hard_limit_bytes": 20000000,
+    "real_limit_text_overflow_test": "passed; all text reconstructed byte for byte",
+    "round_screenshot_eviction_test": "passed; text scores retained",
+    "packaged_score": 9280,
+    "packaged_zip_bytes": 209294,
+    "game_inputs_sent": 0,
+    "exe_sha256": "00345c82009b0ee386bef203e2c9431c7098bd56bf911f0aebe5bcb0651177dd"
+  }
 }

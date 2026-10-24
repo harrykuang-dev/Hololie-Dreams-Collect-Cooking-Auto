@@ -1,4 +1,4 @@
-# Hololive Dreams Auto Collect Cooking — 1.0.1
+# Hololive Dreams Auto Collect Cooking — 1.1.0
 
 [English](README.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Indonesian](README.id.md) · [简体中文](README.zh-CN.md)
 
@@ -6,7 +6,7 @@ Program memasak otomatis untuk Collect Cooking pada *hololive Dreams* versi Wind
 
 ## Unduh
 
-Buka [GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.0.1) dan unduh semua bagian `Collect-Cooking-Auto-v1.0.1-win64.7z.*` ke folder yang sama. Ekstrak `.7z.001` dengan 7-Zip, lalu jalankan `Collect-Cooking-Auto-v1.0.1.exe` di dalam folder hasil ekstraksi.
+Buka [GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.1.0) dan unduh semua bagian `Collect-Cooking-Auto-v1.1.0-win64.7z.*` ke folder yang sama. Ekstrak `.7z.001` dengan 7-Zip, lalu jalankan `Collect-Cooking-Auto-v1.1.0.exe` di dalam folder hasil ekstraksi.
 
 Pertahankan folder `_internal` di samping EXE. Python, pustaka inferensi dan kelima model sudah disertakan. Gunakan `SHA256SUMS.txt` untuk memeriksa unduhan. `models.zip` ditujukan untuk menjalankan kode sumber. ZIP sumber dari GitHub memerlukan pemasangan dependensi dan model secara terpisah.
 
@@ -31,9 +31,9 @@ Klik kolom pintasan, lalu tekan tombol atau kombinasi Ctrl/Alt/Shift yang diingi
 
 ## Persyaratan dan batasan
 
-Memerlukan Windows 10/11 x64 dan game versi Windows. Gunakan area game 16:9, pertahankan monitor menyala dan game terlihat. NVIDIA CUDA dipilih otomatis jika tersedia; jika tidak, inferensi memakai CPU. Pilih Standar terlebih dahulu pada komputer dengan sumber daya terbatas.
+Memerlukan Windows 10/11 x64 dan game versi Windows. Gunakan area game 16:9, monitor menyala dan game terlihat. Satu paket lengkap menyertakan semua pustaka inferensi serta satu set model FP32 ONNX bersama. GPU NVIDIA yang kompatibel otomatis memakai TensorRT; GPU DirectX 12 lain yang didukung memakai DirectML, lalu CPU sebagai cadangan terakhir. CPU atau GPU berperforma rendah mungkin tidak memenuhi batas waktu klik.
 
-Folder hasil ekstraksi memakai sekitar 5,3 GB. Sediakan ruang tambahan untuk unduhan dan ekstraksi. Jumlah permainan selesai menunjukkan kemajuan sesi; lihat jumlah masakan dan skor pada layar hasil game. Gerakan bahan, objek yang saling menutupi, performa komputer dan pembaruan game dapat memengaruhi pengenalan.
+Folder hasil ekstraksi memakai sekitar 2,9 GB. Sediakan ruang tambahan untuk unduhan dan ekstraksi. Jumlah permainan selesai menunjukkan kemajuan sesi; lihat jumlah masakan dan skor pada layar hasil game. Gerakan bahan, objek yang saling menutupi, performa komputer dan pembaruan game dapat memengaruhi pengenalan.
 
 ## Implementasi teknis
 
@@ -66,6 +66,8 @@ Klik `?` di sebelahnya untuk melihat dan membuka folder diagnostik:
 ```
 
 ZIP bertanggal dibuat saat sesi berakhir. Sertakan versi program, model pilihan, bahasa game, resolusi, skala tampilan Windows, deskripsi masalah dan ZIP diagnostik.
+
+Mode pengembang menyimpan skor terkonfirmasi, jumlah masakan, klik, keputusan, alasan menunggu dan waktu setiap permainan dalam JSONL secara permanen. Gambar hasil dan gambar biasa berbagi batas kapasitas; gambar terlama dihapus lebih dahulu. `image-index.json` mencatat gambar yang masih tersedia. Angka yang belum terkonfirmasi bernilai null dengan alasannya. Setiap ZIP diagnostik dibatasi maksimum 20 MB. Jika teks saja melebihi batas, catatan dibagi ke beberapa ZIP dan berkas teks asli lengkap tetap disimpan secara lokal.
 
 ## Sumber dan pemberitahuan
 

@@ -4,8 +4,8 @@ import time
 from pathlib import Path
 import numpy as np
 import cv2
-import torch
-from segmenter import Segmenter, LABELS
+from model_labels import LABELS
+from inference_backend import ModelSession
 from icon_classifier import IconClassifier
 from latest_click import verify_latest_click
 
@@ -15,9 +15,8 @@ class SupplementalFood:
     def __init__(self, baseline, locator_path, classifier_path):
         # Share normalization, screen state and the original box classifier.
         self.model = copy.copy(baseline)
-        self.model.model = Segmenter().to(baseline.device).eval()
-        self.model.model.load_state_dict(torch.load(locator_path, map_location=baseline.device, weights_only=True)['model'])
-        self.model.point_classifier = IconClassifier(baseline.device, str(Path(classifier_path).resolve()))
+        self.model.model = ModelSession(locator_path,baseline.runtime)
+        self.model.point_classifier = IconClassifier(baseline.runtime, str(Path(classifier_path).resolve()))
 
     def candidates(self, frame, perception):
         active = {card['label'] for card, count in zip(perception['recipe'], perception['counters'])
@@ -79,7 +78,7 @@ class SupplementalFood:
         if not validation['accepted']:
             return validation
         canonical, top, scale = self.model.normalize(frame)
-        probabilities = self.model.predict(cv2.resize(canonical[175:735,318:1215], (448,280)))
+        labels,confidence = self.model.surface(cv2.resize(canonical[175:735,318:1215], (448,280)))
         agreement = []
         for x,y in [observed, predicted]:
             cx,cy = x/scale,(y-top)/scale
@@ -87,8 +86,7 @@ class SupplementalFood:
             if not (0 <= gx < 448 and 0 <= gy < 280):
                 agreement.append(False)
             else:
-                p = probabilities[:,gy,gx]
-                agreement.append(LABELS[int(p.argmax())] == label and float(p.max()) >= .90)
+                agreement.append(LABELS[int(labels[gy,gx])] == label and float(confidence[gy,gx]) >= .90)
         validation['surface_agreement'] = agreement
         if not all(agreement):
             validation.update(accepted=False, reason='supplement_latest_surface_disagrees')
@@ -99,7 +97,5 @@ class SelectedSupplement(SupplementalFood):
     """On-demand localization, verified by the already loaded point model."""
     def __init__(self, baseline, locator_path):
         self.model = copy.copy(baseline)
-        self.model.model = Segmenter().to(baseline.device).eval()
-        self.model.model.load_state_dict(torch.load(
-            locator_path, map_location=baseline.device, weights_only=True)['model'])
+        self.model.model = ModelSession(locator_path,baseline.runtime)
         assert self.model.point_classifier is baseline.point_classifier

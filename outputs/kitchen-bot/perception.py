@@ -1,8 +1,9 @@
 """Local image-to-decision perception worker; no desktop capture or input."""
 from pathlib import Path
 import sys,json,time
-import cv2,numpy as np,torch
-from segmenter import Segmenter,LABELS
+import cv2,numpy as np
+from model_labels import LABELS
+from inference_backend import InferenceRuntime, ModelSession
 from icons import Icons
 from counters import Counters
 from shuffle_state import shuffle_state
@@ -22,15 +23,11 @@ def constrain_recipe(cards):
     return out
 
 class Perception:
-    def __init__(self,point_model='point-classifier.pt'):
-        torch.set_num_threads(2)
+    def __init__(self,point_model='point-classifier-resnet18.onnx',backend=None):
         cv2.setNumThreads(2)
-        self.device='cuda' if torch.cuda.is_available() else 'cpu'
-        self.model=Segmenter().to(self.device).eval()
-        path=Path(__file__).parent/'segmenter-adapted.pt'
-        if not path.exists():path=Path(__file__).parent/'segmenter.pt'
-        checkpoint=torch.load(path,map_location=self.device,weights_only=True)
-        self.model.load_state_dict(checkpoint['model']);self.validation=checkpoint['validation']
+        self.runtime=InferenceRuntime(backend)
+        self.model=ModelSession('segmenter-adapted',self.runtime)
+        self.validation=self.model.metadata.get('validation',{})
         self.icons=Icons();self.counters=Counters()
         from screen_state import ScreenState
         self.screen_state=ScreenState();self.point_model=point_model
@@ -39,25 +36,26 @@ class Perception:
         self.complete_mask=cv2.imread(str(Path(__file__).parent/'ui-complete-mask.png'),0)>0
         self.classifier=None
         self.point_classifier=None
-        if (Path(__file__).parent/'icon-classifier.pt').exists():
-            from icon_classifier import IconClassifier
-            self.classifier=IconClassifier(self.device)
-            if (Path(__file__).parent/point_model).exists():
-                self.point_classifier=IconClassifier(self.device,point_model)
+        from icon_classifier import IconClassifier
+        self.classifier=IconClassifier(self.runtime)
+        self.point_classifier=IconClassifier(self.runtime,point_model)
         self.human_point_model=bool(self.point_classifier and self.point_classifier.is_human_point_model)
+    @property
+    def device(self):return self.runtime.backend
     def normalize(self,im):
         h,w=im.shape[:2];top=max(0,h-round(w*9/16))
         return cv2.resize(im[top:,:],(1536,864)),top,w/1536
     def predict(self,im):
-        tensor=torch.from_numpy(im.transpose(2,0,1).copy()).unsqueeze(0).float().to(self.device)/255
-        with torch.inference_mode():
-            p=self.model(tensor).softmax(1)[0].cpu().numpy()
-        return p
+        array=im.transpose(2,0,1)[None].astype(np.float32)/255
+        return self.model.infer(array)[0]
+    def surface(self,im):
+        array=im.transpose(2,0,1)[None].astype(np.float32)/255
+        result=self.model.infer(array,('labels','confidence'))
+        return result['labels'][0],result['confidence'][0]
     def detect(self,canonical,top,scale):
         # Include the lower rim where large food can protrude above the tray.
         board=canonical[175:735,318:1215]
-        resized=cv2.resize(board,(448,280));p=self.predict(resized)
-        labels=p.argmax(0);confidence=p.max(0)
+        resized=cv2.resize(board,(448,280));labels,confidence=self.surface(resized)
         candidates=[]
         for cls in range(1,len(LABELS)):
             mask=((labels==cls)&(confidence>.65)).astype(np.uint8)

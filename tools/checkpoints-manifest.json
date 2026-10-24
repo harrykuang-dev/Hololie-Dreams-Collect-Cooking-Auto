@@ -1,0 +1,34 @@
+{
+  "runtime_version": "1788474ecc76cfb8",
+  "point_model_default": "resnet18",
+  "point_model_options": [
+    "resnet18",
+    "resnet101"
+  ],
+  "files": {
+    "outputs/kitchen-bot/icon-classifier.pt": {
+      "sha256": "a31a282ccd1c0e1fecb8c1928d669610def3d220a5323343070bc11841df1cac",
+      "bytes": 44848459
+    },
+    "outputs/kitchen-bot/segmenter-adapted.pt": {
+      "sha256": "65871384b6b45c36e62cc0941ac198cf863d71121371628fce228b90fc7ef1f6",
+      "bytes": 3806957
+    },
+    "outputs/kitchen-bot/segmenter-positive-surfaces.pt": {
+      "sha256": "b66e1a7dbc9a0da1bc6009f1bef3be40ba84d24c056766c022c9e53da2ba6c95",
+      "bytes": 3808383
+    },
+    "outputs/kitchen-labeler/point-classifier-resnet101.pt": {
+      "sha256": "89de05b4e15da51e9117dfa7cfb5c69973a20e79f1165fa8811ff26b94e30619",
+      "bytes": 170884299
+    },
+    "outputs/kitchen-labeler/point-classifier-resnet18.pt": {
+      "sha256": "17dd93c60b7cbc3042775c0c471257747aa194f5f71fa611e0b71d9e0d1202ad",
+      "bytes": 44849995
+    }
+  },
+  "radius_profile": "required_65",
+  "supplement_mode": "selected_fallback",
+  "archive_sha256": "e8403ec3c02e91cc884858d0986c5300cac63008f6a80a8dd3063478f8a34db3",
+  "archive_bytes": 249667919
+}

@@ -3,7 +3,7 @@ import sys,cv2,numpy as np
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'outputs/kitchen-bot'))
 from local_relocation import detect_local
-from segmenter import LABELS
+from model_labels import LABELS
 class Classifier:
     def classify(self,crops):return [{'label':'egg','score':.999,'alternatives':[]} for _ in crops]
 class Model:

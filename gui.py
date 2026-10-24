@@ -15,7 +15,7 @@ import tempfile
 import shutil
 import webbrowser
 
-VERSION = '1.0.1'
+VERSION = '1.1.0'
 ROOT = Path(__file__).resolve().parent
 BOT = ROOT / 'outputs' / 'kitchen-bot'
 sys.path.insert(0,str(BOT))
@@ -508,12 +508,15 @@ def worker():
     parser.add_argument('--wait-for-start',action='store_true')
     parser.add_argument('--state-file',type=Path)
     parser.add_argument('--check-model-only',action='store_true',help='Load and verify the chosen model, then exit without game capture or input.')
+    parser.add_argument('--check-result-screen',type=Path,help='Read and archive a saved result image without loading models or sending input.')
     args=parser.parse_args()
     import diagnostic_store as diagnostics
     previous=os.environ.get('COOKING_DIAGNOSTICS')
     store=diagnostics.configure(args.output.parent,args.developer_mode,version=VERSION,model=args.model,requested_games=args.games)
     error=None
-    try:return run_worker(args,store)
+    try:
+        if args.check_result_screen:return check_result_screen(args)
+        return run_worker(args,store)
     except BaseException:
         import traceback
         error=traceback.format_exc();raise
@@ -525,6 +528,23 @@ def worker():
         diagnostics._active=None
         if previous is None:os.environ.pop('COOKING_DIAGNOSTICS',None)
         else:os.environ['COOKING_DIAGNOSTICS']=previous
+
+
+def check_result_screen(args):
+    import cv2
+    import diagnostic_store as diagnostics
+    from result_reader import ResultReader
+    from screen_state import ScreenState
+    args.output.parent.mkdir(parents=True,exist_ok=True)
+    frame=cv2.imread(str(args.check_result_screen))
+    if frame is None:raise ValueError('Result image could not be read')
+    h,w=frame.shape[:2];canonical=cv2.resize(frame[max(0,h-round(w*9/16)):],(1536,864))
+    result=ResultReader().read(canonical,ScreenState().classify(canonical))
+    result.update(source='offline_result_check',game_inputs_sent=0,confirmation='offline_still_image')
+    directory=args.output/'standalone-offline-result-check'
+    diagnostics.save_frame(directory/'final.jpg',frame)
+    diagnostics.save_round(directory,result)
+    (args.output.parent/'result-check.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf8')
 
 
 def run_worker(args,store=None):
@@ -546,18 +566,23 @@ def run_worker(args,store=None):
     publish_state(args.state_file,'loading',model=args.model)
     import standalone
     if args.control_file.exists():print('Canceled before loading.',flush=True);return
-    checked=standalone.load_models('../kitchen-labeler/'+selected_point_model.name)
+    try:checked=standalone.load_models(str(selected_point_model))
+    except InterruptedError:
+        if args.control_file.exists():print('Canceled during model loading.',flush=True);return
+        raise
     # Exercise the real CUDA/CPU kernels before reporting readiness. Synthetic
     # arrays never read the desktop, advance a game or issue native input.
     import numpy as np
     checked.point_classifier.classify([np.zeros((64,64,3),dtype=np.uint8)])
     checked.classifier.classify([np.zeros((64,64,3),dtype=np.uint8)])
-    checked.predict(np.zeros((280,448,3),dtype=np.uint8))
-    checked.supplement.model.predict(np.zeros((280,448,3),dtype=np.uint8))
+    checked.surface(np.zeros((280,448,3),dtype=np.uint8))
+    checked.supplement.model.surface(np.zeros((280,448,3),dtype=np.uint8))
+    if checked.device=='directml':
+        for size in (112,160):
+            checked.surface(np.zeros((size,size,3),dtype=np.uint8))
+            checked.supplement.model.surface(np.zeros((size,size,3),dtype=np.uint8))
     if store is not None:
-        import torch
-        store.details.update(device=str(checked.point_classifier.device),torch=torch.__version__,
-                             gpu=torch.cuda.get_device_name() if torch.cuda.is_available() else None)
+        store.details.update(device=checked.device,inference=checked.runtime.info)
     if args.control_file.exists():print('Canceled after loading.',flush=True);return
     if args.check_model_only:
         import hashlib
@@ -566,11 +591,12 @@ def run_worker(args,store=None):
         if classifier is None or classifier.architecture!=args.model or not checked.human_point_model:
             raise RuntimeError('Selected point classifier did not load correctly')
         report={'passed':True,'model':args.model,'loaded_architecture':classifier.architecture,
-                'parameters':sum(p.numel() for p in classifier.model.parameters()),'labels':classifier.labels,
+                'parameters':classifier.parameters,'labels':classifier.labels,
                 'point_model':str(selected_point_model),'sha256':hashlib.sha256(selected_point_model.read_bytes()).hexdigest(),
                 'capture_implementation':standalone.Recording.__module__,'human_point_model':checked.human_point_model,'icon_template_count':len(checked.icons.bank),
                 'supplement_mode':'selected_fallback','supplement_shares_classifier':checked.supplement.model.point_classifier is classifier,
-                'radius_profile':PROFILE,'warmup_completed':True,'game_inputs_sent':0}
+                'radius_profile':PROFILE,'warmup_completed':True,'game_inputs_sent':0,
+                'inference':checked.runtime.info,'torch_imported':any(name=='torch' or name.startswith('torch.') for name in sys.modules)}
         (args.output.parent/'model-check.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf8')
         print(json.dumps(report,ensure_ascii=False),flush=True)
         return
@@ -580,7 +606,7 @@ def run_worker(args,store=None):
         print('Model ready. Waiting for an explicit start request.',flush=True)
         if not wait_for_start(args.control_file.with_name('start.json'),args.control_file):
             print('Canceled without starting the game.',flush=True);return
-    sys.argv=['standalone.py','--games',str(args.games),'--output',str(args.output),'--point-model','../kitchen-labeler/'+selected_point_model.name]
+    sys.argv=['standalone.py','--games',str(args.games),'--output',str(args.output),'--point-model',str(selected_point_model)]
     if args.autostart: sys.argv.append('--autostart')
     if args.wait_for_start:sys.argv.append('--wait-for-focus')
     standalone.main(model=checked,status_callback=lambda state:publish_state(args.state_file,state,model=args.model))

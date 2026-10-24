@@ -18,6 +18,7 @@ import collections
 from supplemental_food import SelectedSupplement
 from app_settings import StartHotkey, stop_hotkey_pressed
 from game_window import GAME_TITLE
+from inference_backend import model_path
 
 class BitmapHeader(C.Structure):
     _fields_=[('size',W.DWORD),('width',W.LONG),('height',W.LONG),
@@ -158,6 +159,7 @@ def replay(file,model):
     return {'action':planner.propose(result),'status':planner.status(),'perception':result}
 
 def play(args,model,autostart=False,status_callback=None):
+    round_started_at=time.time()
     directory=args.output/('standalone-'+str(int(time.time()*1000)))
     directory.mkdir(parents=True,exist_ok=True)
     desktop=Desktop(args.title);recording=Recording(desktop,directory,args.fps);writer=FrameWriter();planner=Planner()
@@ -281,15 +283,30 @@ def play(args,model,autostart=False,status_callback=None):
                                         inputs.write(json.dumps({'decision':number,'kind':'food','label':action['label'],'point':list(point2),'followup':True,'frame':str(file2.resolve()),'at':round(time.time()*1000)})+'\n');inputs.flush()
                 fresh_after=time.monotonic()+(.20 if action['kind']=='food' else .80)
     finally:
+        from result_reader import collect_result
+        round_result={'score':None,'completed_dishes':None,'verified':False,'reason':'no_frame'}
+        if last_frame is not None:
+            try:last_frame,round_result=collect_result(recording,model,last_frame,natural_end)
+            except Exception as error:round_result['reason']='result_reader_error: '+str(error)
         if last_frame is not None:writer.save(directory/'final.jpg',last_frame)
-        recording.close();writer.close();desktop.close()
-        (directory/'summary.json').write_text(json.dumps({'status':planner.status(),'frames':number,'video':'game.mp4' if recording.video is not None else None,'goal_verified':False},indent=2),encoding='utf8')
+        cleanup_error=None
+        for close in (recording.close,writer.close,desktop.close):
+            try:close()
+            except Exception as error:cleanup_error=cleanup_error or error
+        round_result.update(natural_end=natural_end,estimated_completed_dishes=planner.status()['completed'],
+                            inference=model.runtime.info if hasattr(model,'runtime') else None,
+                            started_at=round_started_at,ended_at=time.time(),
+                            duration_s=time.time()-round_started_at)
+        if cleanup_error is not None:round_result['cleanup_error']=str(cleanup_error)
+        diagnostics.save_round(directory,round_result)
+        (directory/'summary.json').write_text(json.dumps({'status':planner.status(),'frames':number,'video':'game.mp4' if recording.video is not None else None,'goal_verified':False,'result':round_result},indent=2),encoding='utf8')
         print('Finished. Review final.jpg and game.mp4. Ten dishes are not assumed from the internal counter.',flush=True)
-    return {'directory':str(directory.resolve()),'status':planner.status(),'natural_end':natural_end}
+        if cleanup_error is not None:raise cleanup_error
+    return {'directory':str(directory.resolve()),'status':planner.status(),'natural_end':natural_end,'result':round_result}
 
 def load_models(point_model):
     model=Perception(point_model)
-    model.supplement=SelectedSupplement(model,Path(__file__).parent/'segmenter-positive-surfaces.pt')
+    model.supplement=SelectedSupplement(model,model_path('segmenter-positive-surfaces'))
     return model
 
 
@@ -298,7 +315,7 @@ def main(model=None,status_callback=None):
     parser.add_argument('--seconds',type=int,default=300);parser.add_argument('--fps',type=int,default=20)
     parser.add_argument('--output',type=Path,default=Path(__file__).resolve().parent/'runs')
     parser.add_argument('--diagnostic-lossless-interval',type=float,default=2.0,help='Minimum seconds between failed tracking PNG pairs.')
-    parser.add_argument('--point-model',default='../kitchen-labeler/point-classifier-resnet18.pt')
+    parser.add_argument('--point-model',default=str(model_path('point-classifier-resnet18')))
     parser.add_argument('--autostart',action='store_true',help='Start after model loading only if the game is foreground.')
     parser.add_argument('--wait-for-focus',action='store_true',help='After an explicit start request, wait for the game foreground.')
     parser.add_argument('--games',type=int,default=5,help='Positive number of games; defaults to five.')
@@ -322,13 +339,13 @@ def main(model=None,status_callback=None):
                 saved=session/'source/shared-textures'/file.name;saved.parent.mkdir(parents=True,exist_ok=True)
                 shutil.copy2(file,saved)
             fingerprints[relative]=hashlib.sha256(file.read_bytes()).hexdigest()
-        for filename in [args.point_model,'segmenter-adapted.pt','icon-classifier.pt','segmenter-positive-surfaces.pt']:
-            file=source/filename
+        for filename in [args.point_model,'segmenter-adapted','icon-classifier','segmenter-positive-surfaces']:
+            file=model_path(filename)
             if file.exists():
                 digest=hashlib.sha256()
                 with file.open('rb') as stream:
                     for chunk in iter(lambda:stream.read(1024*1024),b''):digest.update(chunk)
-                fingerprints[filename]=digest.hexdigest()
+                fingerprints['models/'+file.name]=digest.hexdigest()
         version=hashlib.sha256(json.dumps(fingerprints,sort_keys=True).encode()).hexdigest()[:16]
         (session/'version.json').write_text(json.dumps({'version':version,'files':fingerprints,'requested_games':args.games,'capture_fps':args.fps},indent=2),encoding='utf8')
         print(f'Fixed-version batch {version}: {args.games} games. Session: {session.resolve()}',flush=True)

@@ -3,5 +3,6 @@
 *.pyw -text
 *.md text eol=lf
 *.json text eol=lf
+outputs/kitchen-bot/result-digits/*.json -text
 *.txt text eol=lf
 *.cmd text eol=crlf

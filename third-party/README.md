@@ -6,3 +6,8 @@ license reproduced in `Hololive-Dreams-Fishing-Auto-LICENSE.txt`.
 The cooking launcher uses its shortcut validation, physical-key capture,
 fresh-press detection and Windows global hotkey listener. The cooking game's
 recognition and planning implementation is independent of the fishing bot.
+
+The standalone inference package includes TensorRT, the NVIDIA CUDA runtime,
+and ONNX Runtime with DirectML. Their license files and ONNX Runtime third-party notices are
+preserved in the corresponding subdirectories. Training and export dependencies
+are separate from the player runtime.

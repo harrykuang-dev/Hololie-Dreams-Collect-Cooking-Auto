@@ -1,6 +1,7 @@
-# Tested Python 3.13 package versions. CUDA wheel availability depends on index.
-torch==2.8.0
-torchvision==0.23.0
+# Python 3.13 player runtime; training/export dependencies are separate.
+onnxruntime-directml==1.24.4
+tensorrt-cu12==10.13.3.9.post1
+nvidia-cuda-runtime-cu12==12.9.79
 opencv-python==4.14.0.94
 numpy==2.3.2
 Pillow==11.3.0

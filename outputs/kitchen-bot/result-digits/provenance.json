@@ -1,0 +1,49 @@
+{
+  "method": "white digit connected components; Dice templates",
+  "training_examples": [
+    {
+      "source": "candidate-10 game 1 final.jpg",
+      "score": 9650,
+      "completed_dishes": 11
+    },
+    {
+      "source": "candidate-10 game 2 final.jpg",
+      "score": 9220,
+      "completed_dishes": 11
+    },
+    {
+      "source": "candidate-10 game 3 final.jpg",
+      "score": 10400,
+      "completed_dishes": 12
+    },
+    {
+      "source": "candidate-10 game 4 final.jpg",
+      "score": 8700,
+      "completed_dishes": 10
+    },
+    {
+      "source": "candidate-10 game 5 final.jpg",
+      "score": 7080,
+      "completed_dishes": 9
+    },
+    {
+      "source": "candidate-10 game 6 final.jpg",
+      "score": 8360,
+      "completed_dishes": 10
+    }
+  ],
+  "regions_canonical_1536x864": {
+    "score": [
+      840,
+      305,
+      1290,
+      435
+    ],
+    "completed_dishes": [
+      1110,
+      560,
+      1270,
+      625
+    ]
+  }
+}

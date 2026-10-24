@@ -1,34 +1,55 @@
 {
-  "runtime_version": "1788474ecc76cfb8",
+  "format": "onnx-v1",
   "point_model_default": "resnet18",
   "point_model_options": [
     "resnet18",
     "resnet101"
   ],
   "files": {
-    "outputs/kitchen-bot/icon-classifier.pt": {
-      "sha256": "a31a282ccd1c0e1fecb8c1928d669610def3d220a5323343070bc11841df1cac",
-      "bytes": 44848459
+    "models/inference/icon-classifier.json": {
+      "sha256": "b91e218062e84369ada8558e71fb7634db6668ca4ad8a5a00fad556acd0e6286",
+      "bytes": 1000
     },
-    "outputs/kitchen-bot/segmenter-adapted.pt": {
-      "sha256": "65871384b6b45c36e62cc0941ac198cf863d71121371628fce228b90fc7ef1f6",
-      "bytes": 3806957
+    "models/inference/icon-classifier.onnx": {
+      "sha256": "793d8f92a2d82e840c0eeeb933b9d6400482c730b8c1db1b9952564aeabf5fbd",
+      "bytes": 44759159
     },
-    "outputs/kitchen-bot/segmenter-positive-surfaces.pt": {
-      "sha256": "b66e1a7dbc9a0da1bc6009f1bef3be40ba84d24c056766c022c9e53da2ba6c95",
-      "bytes": 3808383
+    "models/inference/point-classifier-resnet101.json": {
+      "sha256": "401e2aa8b143ac28c9ec929b2b1ace88d4b65eec7ba591e18a3b32c57ffc8981",
+      "bytes": 1336
     },
-    "outputs/kitchen-labeler/point-classifier-resnet101.pt": {
-      "sha256": "89de05b4e15da51e9117dfa7cfb5c69973a20e79f1165fa8811ff26b94e30619",
-      "bytes": 170884299
+    "models/inference/point-classifier-resnet101.onnx": {
+      "sha256": "dba20ea26795f53d79aaab332fde2a69b6bb18346d75d7dc7d9cd48710f8f961",
+      "bytes": 170097404
     },
-    "outputs/kitchen-labeler/point-classifier-resnet18.pt": {
-      "sha256": "17dd93c60b7cbc3042775c0c471257747aa194f5f71fa611e0b71d9e0d1202ad",
-      "bytes": 44849995
+    "models/inference/point-classifier-resnet18.json": {
+      "sha256": "65be7d7332909f1642ac112f15da29184eea35d88c720976971f53528e421c5b",
+      "bytes": 1335
+    },
+    "models/inference/point-classifier-resnet18.onnx": {
+      "sha256": "42529369351c9677c2680782db4341dc89f4650722cdfef50c79637e8a8898c2",
+      "bytes": 44761211
+    },
+    "models/inference/segmenter-adapted.json": {
+      "sha256": "b1cb82e6e607f4d694765be6d7ae243c4c48de16ac0afe2bacb6fd3576e680d2",
+      "bytes": 1051
+    },
+    "models/inference/segmenter-adapted.onnx": {
+      "sha256": "1877326b3cfa61a8acbc7deca7e627b4a4a5349670f8a21e9443fa1e7d35f1f1",
+      "bytes": 3772397
+    },
+    "models/inference/segmenter-positive-surfaces.json": {
+      "sha256": "2493d5deec03bdcc6b25e423e6f40ec5e6d7fc6c4eaf39db4064334b5ce1beee",
+      "bytes": 1051
+    },
+    "models/inference/segmenter-positive-surfaces.onnx": {
+      "sha256": "54edbf3d962425a50fc1652383686e189f1e7af819d07d928ccacf945526ec8a",
+      "bytes": 3772397
     }
   },
   "radius_profile": "required_65",
   "supplement_mode": "selected_fallback",
-  "archive_sha256": "e8403ec3c02e91cc884858d0986c5300cac63008f6a80a8dd3063478f8a34db3",
-  "archive_bytes": 249667919
+  "runtime_version": "e059fd107499d2d3",
+  "archive_sha256": "485c87a0463d524a152b934c198b0237cf5b8c115c3d47cbdcd122bb75e30b16",
+  "archive_bytes": 248688710
 }
