@@ -6,7 +6,7 @@ Windows版『hololive Dreams』の「そろえてクッキング」を自動操�
 
 ## ダウンロード
 
-[GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.1.0)から `Collect-Cooking-Auto-v1.1.0-win64.7z.*` の全分割ファイルを同じフォルダーにダウンロードしてください。7-Zipで `.7z.001` を展開し、フォルダー内の `Collect-Cooking-Auto-v1.1.0.exe` を実行します。
+[GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.1.0)から `Collect-Cooking-Auto-v1.1.0-win64.7z` をダウンロードしてください。7-Zipで展開し、フォルダー内の `Collect-Cooking-Auto-v1.1.0.exe` を実行します。
 
 EXEの隣にある `_internal` フォルダーも必要です。Python、推論ライブラリ、5個の学習済みモデルを同梱しています。ダウンロードの確認には `SHA256SUMS.txt` を使用できます。`models.zip` はソースから実行する場合のモデルです。GitHubのソースZIPでは依存パッケージとモデルを別途導入してください。
 

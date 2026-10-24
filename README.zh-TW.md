@@ -6,7 +6,7 @@ Windows版《hololive Dreams》食材妙廚房的自動料理程式。透過遊�
 
 ## 下載
 
-前往 [GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.1.0)，將所有 `Collect-Cooking-Auto-v1.1.0-win64.7z.*` 分卷下載至同一資料夾。用7-Zip解壓 `.7z.001`，再執行解壓資料夾中的 `Collect-Cooking-Auto-v1.1.0.exe`。
+前往 [GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.1.0)，下載 `Collect-Cooking-Auto-v1.1.0-win64.7z`。用7-Zip解壓，再執行解壓資料夾中的 `Collect-Cooking-Auto-v1.1.0.exe`。
 
 請保留EXE旁的 `_internal` 資料夾。已包含Python、推論函式庫及五份模型權重。`SHA256SUMS.txt`用於核對下載檔案；`models.zip`供原始碼使用。GitHub自動產生的原始碼ZIP需另外安裝依賴與模型。
 
@@ -33,7 +33,7 @@ Windows版《hololive Dreams》食材妙廚房的自動料理程式。透過遊�
 
 適用於Windows 10／11 x64及Windows版遊戲。遊戲客戶區需維持16:9，保持螢幕開啟及遊戲可見。單一完整版包含全部推論函式庫及一份共用FP32 ONNX模型。相容NVIDIA GPU自動使用TensorRT，其他支援的DirectX 12 GPU使用DirectML，最後回退CPU。CPU或效能較低的GPU可能無法通過點擊時效檢查。
 
-解壓後的可攜資料夾約2.9 GB，另需預留下載分卷及解壓空間。介面中的已完成局數表示批次進度，料理數與成績以遊戲結算畫面為準。食材移動、遮擋、電腦效能及遊戲更新都可能影響辨識。
+解壓後的可攜資料夾約2.9 GB，另需預留下載檔案及解壓空間。介面中的已完成局數表示批次進度，料理數與成績以遊戲結算畫面為準。食材移動、遮擋、電腦效能及遊戲更新都可能影響辨識。
 
 ## 技術實作
 

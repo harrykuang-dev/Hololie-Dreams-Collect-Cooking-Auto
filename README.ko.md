@@ -6,7 +6,7 @@ Windows판 *hololive Dreams*의 모아 쿠킹을 자동으로 플레이하는 �
 
 ## 다운로드
 
-[GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.1.0)에서 `Collect-Cooking-Auto-v1.1.0-win64.7z.*` 분할 파일을 모두 같은 폴더에 다운로드하세요. 7-Zip으로 `.7z.001`을 압축 해제한 뒤 폴더의 `Collect-Cooking-Auto-v1.1.0.exe`를 실행하세요.
+[GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.1.0)에서 `Collect-Cooking-Auto-v1.1.0-win64.7z`를 다운로드하세요. 7-Zip으로 압축을 해제한 뒤 폴더의 `Collect-Cooking-Auto-v1.1.0.exe`를 실행하세요.
 
 EXE 옆의 `_internal` 폴더를 유지하세요. Python, 추론 라이브러리와 모델 가중치 5개가 포함되어 있습니다. `SHA256SUMS.txt`로 다운로드를 확인할 수 있으며 `models.zip`은 소스 실행용입니다. GitHub의 소스 ZIP은 의존 패키지와 모델을 별도로 설치해야 합니다.
 

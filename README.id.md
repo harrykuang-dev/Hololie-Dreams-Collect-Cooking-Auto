@@ -6,7 +6,7 @@ Program memasak otomatis untuk Collect Cooking pada *hololive Dreams* versi Wind
 
 ## Unduh
 
-Buka [GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.1.0) dan unduh semua bagian `Collect-Cooking-Auto-v1.1.0-win64.7z.*` ke folder yang sama. Ekstrak `.7z.001` dengan 7-Zip, lalu jalankan `Collect-Cooking-Auto-v1.1.0.exe` di dalam folder hasil ekstraksi.
+Buka [GitHub Releases](https://github.com/harrykuang-dev/Hololive-Dreams-Collect-Cooking-Auto/releases/tag/v1.1.0) dan unduh `Collect-Cooking-Auto-v1.1.0-win64.7z`. Ekstrak dengan 7-Zip, lalu jalankan `Collect-Cooking-Auto-v1.1.0.exe` di dalam folder hasil ekstraksi.
 
 Pertahankan folder `_internal` di samping EXE. Python, pustaka inferensi dan kelima model sudah disertakan. Gunakan `SHA256SUMS.txt` untuk memeriksa unduhan. `models.zip` ditujukan untuk menjalankan kode sumber. ZIP sumber dari GitHub memerlukan pemasangan dependensi dan model secara terpisah.
 
